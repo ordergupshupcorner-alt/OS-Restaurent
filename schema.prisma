@@ -1,0 +1,26 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+
+model User { id String @id @default(cuid()); email String @unique; passwordHash String?; provider String?; name String; role String @default("Owner"); restaurantId String?; createdAt DateTime @default(now()); @@map("users") }
+model Restaurant { id String @id @default(cuid()); name String; type String; cuisine String?; ownerId String; createdAt DateTime @default(now()); branches Branch[]; @@map("restaurants") }
+model Branch { id String @id @default(cuid()); restaurantId String; name String; address String; isPrimary Boolean @default(false); staff Staff[]; menuItems MenuItem[]; @@map("branches") }
+model Staff { id String @id @default(cuid()); restaurantId String; branchId String?; userId String; role String; invitedAt DateTime @default(now()); @@map("staff") }
+model MenuCategory { id String @id @default(cuid()); restaurantId String; branchId String?; name String; position Int; @@map("menu_categories") }
+model MenuItem { id String @id @default(cuid()); restaurantId String; branchId String?; categoryId String; name String; description String?; price Float; variant String?; portion String?; dietary String?; imageUrl String?; foodCost Float?; score Int?; views Int @default(0); createdAt DateTime @default(now()); variants MenuVariant[]; addons Addon[]; @@map("menu_items") }
+model MenuVariant { id String @id @default(cuid()); itemId String; name String; price Float; @@map("menu_variants") }
+model Addon { id String @id @default(cuid()); itemId String; name String; price Float; @@map("addons") }
+model Combo { id String @id @default(cuid()); restaurantId String; name String; items String[]; price Float; margin Float?; status String @default("draft"); confidence Float?; @@map("combos") }
+model Order { id String @id @default(cuid()); restaurantId String; branchId String; total Float; createdAt DateTime @default(now()); items OrderItem[]; @@map("orders") }
+model OrderItem { id String @id @default(cuid()); orderId String; menuItemId String; qty Int; price Float; @@map("order_items") }
+model Customer { id String @id @default(cuid()); restaurantId String; name String; phone String?; email String?; consent Boolean @default(false); segment String @default("New"); orders Int @default(0); lastOrderAt DateTime?; aov Float?; favCategory String?; @@map("customers") }
+model Review { id String @id @default(cuid()); restaurantId String; branchId String?; source String; rating Int; text String; sentiment Float?; cluster String?; responseDraft String?; status String @default("pending"); createdAt DateTime @default(now()); @@map("reviews") }
+model Campaign { id String @id @default(cuid()); restaurantId String; objective String; segment String; offer String; budget Float?; status String @default("draft"); scheduledAt DateTime?; createdAt DateTime @default(now()); messages CampaignMessage[]; @@map("campaigns") }
+model CampaignMessage { id String @id @default(cuid()); campaignId String; channel String; body String; status String @default("pending"); @@map("campaign_messages") }
+model CampaignEvent { id String @id @default(cuid()); campaignId String; customerId String; event String; at DateTime @default(now()); @@map("campaign_events") }
+model AiRecommendation { id String @id @default(cuid()); restaurantId String; type String; title String; reason String; metric String; impact String; confidence Int; status String @default("pending"); createdAt DateTime @default(now()); @@map("ai_recommendations") }
+model AiAnalysis { id String @id @default(cuid()); restaurantId String; kind String; input Json?; output Json?; createdAt DateTime @default(now()); @@map("ai_analyses") }
+model AnalyticsSnapshot { id String @id @default(cuid()); restaurantId String; branchId String?; date DateTime; revenue Float; orders Int; aov Float; repeatRate Float?; @@map("analytics_snapshots") }
+model Integration { id String @id @default(cuid()); restaurantId String; provider String; config Json?; status String @default("connected"); @@map("integrations") }
+model Subscription { id String @id @default(cuid()); restaurantId String; plan String; status String; currentPeriodEnd DateTime?; @@map("subscriptions") }
+model Notification { id String @id @default(cuid()); restaurantId String; userId String?; type String; title String; body String?; read Boolean @default(false); createdAt DateTime @default(now()); @@map("notifications") }
+model AuditLog { id String @id @default(cuid()); restaurantId String; userId String?; action String; entity String?; meta Json?; createdAt DateTime @default(now()); @@map("audit_logs") }

@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Restaurant Growth OS — Your AI co-pilot for restaurant growth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#FFF8F0;
+  --bg2:#FFFDF9;
+  --card:#FFFFFF;
+  --ink:#0F1115;
+  --muted:#6B7280;
+  --muted2:#9CA3AF;
+  --line:#EFE6DC;
+  --line2:#F3E8DB;
+  --orange:#FF4D00;
+  --orange2:#FF6B2B;
+  --orangeSoft:#FFF0E6;
+  --green:#059669;
+  --greenSoft:#ECFDF5;
+  --amber:#D97706;
+  --amberSoft:#FFFBEB;
+  --blue:#2563EB;
+  --blueSoft:#EFF6FF;
+  --violet:#7C3AED;
+  --violetSoft:#F5F3FF;
+  --radius:16px;
+  --radiusLg:20px;
+  --shadow:0 4px 24px rgba(15,17,21,0.06), 0 1px 3px rgba(15,17,21,0.08);
+  --shadowLg:0 12px 40px rgba(15,17,21,0.10);
+}
+[data-theme="dark"]{
+  --bg:#0B0B0C;
+  --bg2:#141416;
+  --card:#1A1A1E;
+  --ink:#F9FAFB;
+  --muted:#9CA3AF;
+  --muted2:#6B7280;
+  --line:#232326;
+  --line2:#232326;
+  --orangeSoft:#1F120C;
+  --greenSoft:#0B1A13;
+  --amberSoft:#1A160C;
+  --blueSoft:#0C1526;
+  --violetSoft:#140F26;
+}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-0.02em}
+button{font-family:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:#E5D5C5;border-radius:999px}
+[data-theme="dark"] ::-webkit-scrollbar-thumb{background:#2A2A2E}
+
+/* Layout */
+.app{display:flex;min-height:100vh}
+.sidebar{width:260px;background:var(--card);border-right:1px solid var(--line);position:fixed;top:0;left:0;bottom:0;z-index:40;display:flex;flex-direction:column;overflow:hidden}
+.main{flex:1;margin-left:260px;min-width:0}
+.topbar{position:sticky;top:0;z-index:30;background:rgba(255,248,240,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:14px 24px;display:flex;align-items:center;gap:16px;justify-content:space-between}
+[data-theme="dark"] .topbar{background:rgba(11,11,12,0.85)}
+.content{padding:24px;max-width:1280px;margin:0 auto}
+
+/* Sidebar */
+.brand{padding:20px 18px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--orange),#FF8C4B);display:grid;place-items:center;color:white;font-weight:800;font-size:18px;box-shadow:0 6px 16px rgba(255,77,0,0.3)}
+.brand h2{font-size:15px;line-height:1.1;font-weight:800}
+.brand p{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-top:2px}
+.nav{padding:14px 10px;flex:1;overflow:auto}
+.nav-section{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted2);padding:14px 10px 6px}
+.nav-item{width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;font-size:13.5px;font-weight:500;color:#3F3F46;cursor:pointer;border:0;background:transparent;text-align:left;transition:all .15s}
+[data-theme="dark"] .nav-item{color:#A1A1AA}
+.nav-item:hover{background:var(--bg)}
+.nav-item.active{background:var(--ink);color:white;box-shadow:0 4px 12px rgba(15,17,21,0.15)}
+.nav-item.active .nav-icon{opacity:1}
+.nav-icon{width:18px;height:18px;opacity:0.7;flex-shrink:0}
+.nav-badge{margin-left:auto;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--orange);color:white}
+.nav-badge.soon{background:var(--line);color:var(--muted);font-weight:600}
+.sidebar-foot{padding:14px;border-top:1px solid var(--line);background:var(--bg2)}
+.restaurant-switch{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer}
+.restaurant-switch img{width:36px;height:36px;border-radius:8px;object-fit:cover}
+.restaurant-switch strong{font-size:13px;display:block;line-height:1.1}
+.restaurant-switch span{font-size:12px;color:var(--muted)}
+
+/* Topbar */
+.search{flex:1;max-width:420px;position:relative}
+.search input{width:100%;height:40px;padding:0 14px 0 36px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:13.5px;outline:none;color:var(--ink)}
+.search input::placeholder{color:var(--muted2)}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:0.5}
+.top-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{width:40px;height:40px;border-radius:999px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;position:relative;color:var(--ink)}
+.icon-btn:hover{border-color:#E5D5C5}
+.badge-dot{position:absolute;top:-2px;right:-2px;width:16px;height:16px;background:var(--orange);color:white;font-size:10px;font-weight:800;border-radius:999px;display:grid;place-items:center;border:2px solid var(--card)}
+.user-chip{display:flex;align-items:center;gap:10px;padding:4px 4px 4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);cursor:pointer}
+.user-chip img{width:32px;height:32px;border-radius:999px}
+.user-chip strong{font-size:13px}
+.user-chip span{font-size:11px;color:var(--muted);display:block;line-height:1}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.card-p{padding:18px}
+.kicker{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted2)}
+.btn{height:40px;padding:0 16px;border-radius:999px;border:1px solid transparent;font-weight:700;font-size:13.5px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--orange);color:white;box-shadow:0 6px 16px rgba(255,77,0,0.25)}
+.btn-primary:hover{background:#E64500;transform:translateY(-1px)}
+.btn-dark{background:var(--ink);color:white}
+.btn-dark:hover{opacity:0.9}
+.btn-ghost{background:var(--card);border-color:var(--line);color:var(--ink)}
+.btn-ghost:hover{background:var(--bg)}
+.btn-sm{height:32px;padding:0 12px;font-size:12.5px}
+.btn-xs{height:28px;padding:0 10px;font-size:12px;font-weight:700}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:0.02em}
+.badge-green{background:var(--greenSoft);color:var(--green);border:1px solid #A7F3D0}
+.badge-amber{background:var(--amberSoft);color:var(--amber);border:1px solid #FDE68A}
+.badge-blue{background:var(--blueSoft);color:var(--blue);border:1px solid #BFDBFE}
+.badge-violet{background:var(--violetSoft);color:var(--violet);border:1px solid #DDD6FE}
+.badge-ink{background:var(--ink);color:white}
+.divider{height:1px;background:var(--line)}
+.grid{display:grid;gap:16px}
+.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:1100px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}.sidebar{transform:translateX(-100%);transition:transform .25s}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.content{padding:16px}.topbar{padding:10px 14px}}
+
+/* Metric */
+.metric{padding:16px 18px}
+.metric-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.metric-icon{width:36px;height:36px;border-radius:10px;display:grid;place-items:center}
+.metric-val{font-size:26px;font-weight:800;letter-spacing:-0.03em;line-height:1}
+.metric-label{font-size:12.5px;color:var(--muted);font-weight:500;margin-top:2px}
+.metric-change{font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:3px 7px;border-radius:999px}
+.metric-change.up{background:var(--greenSoft);color:var(--green)}
+.metric-change.down{background:#FEF2F2;color:#DC2626}
+.spark{height:28px;width:100%;margin-top:10px}
+
+/* Growth Score */
+.score-ring{width:96px;height:96px;border-radius:999px;display:grid;place-items:center;position:relative;flex-shrink:0}
+.score-ring::before{content:'';position:absolute;inset:0;border-radius:999px;background:conic-gradient(var(--orange) calc(var(--score)*1%), var(--line) 0);mask:radial-gradient(circle 36px at center, transparent 36px, black 37px);-webkit-mask:radial-gradient(circle 36px at center, transparent 36px, black 37px)}
+.score-inner{width:72px;height:72px;border-radius:999px;background:var(--card);display:grid;place-items:center;box-shadow:inset 0 1px 0 rgba(0,0,0,0.06);position:relative}
+.score-num{font-size:22px;font-weight:800;letter-spacing:-0.03em}
+.score-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted2);margin-top:-2px}
+
+/* Progress */
+.progress{height:6px;background:var(--line);border-radius:999px;overflow:hidden}
+.progress>div{height:100%;border-radius:999px;transition:width .6s}
+
+/* Table-ish */
+.item-row{display:flex;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card);align-items:center}
+.item-row:hover{border-color:#E8D9C8}
+.thumb{width:48px;height:48px;border-radius:10px;object-fit:cover;background:var(--bg);flex-shrink:0}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;padding:4px;background:var(--bg);border:1px solid var(--line);border-radius:999px;width:fit-content}
+.tab{padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;border:0;background:transparent;color:var(--muted)}
+.tab.active{background:var(--card);color:var(--ink);box-shadow:0 1px 6px rgba(0,0,0,0.08);border:1px solid var(--line)}
+
+/* Upload zone */
+.drop{border:1.5px dashed #E7D9CA;border-radius:16px;background:linear-gradient(180deg, var(--card), var(--bg2));padding:22px;text-align:center;transition:all .15s}
+.drop.drag{border-color:var(--orange);background:var(--orangeSoft)}
+.drop:hover{border-color:var(--orange)}
+.sheet-preview{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg2);border-bottom:1px solid var(--line)}
+
+/* Modal */
+.modal{position:fixed;inset:0;background:rgba(15,17,21,0.45);backdrop-filter:blur(6px);display:none;place-items:center;z-index:60;padding:16px}
+.modal.open{display:grid}
+.modal-card{width:min(640px,100%);background:var(--card);border-radius:20px;box-shadow:var(--shadowLg);overflow:hidden;max-height:90vh;display:flex;flex-direction:column}
+.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.modal-body{padding:20px;overflow:auto}
+
+/* Auth */
+.auth-wrap{min-height:100vh;display:grid;grid-template-columns:1.05fr 0.95fr;background:var(--bg)}
+.auth-left{padding:26px 28px;display:flex;flex-direction:column;background:linear-gradient(180deg, #0F1115 0%, #1A1C1F 100%);color:white;position:relative;overflow:hidden}
+.auth-left::before{content:'';position:absolute;inset:0;background:radial-gradient(600px 400px at 20% 10%, rgba(255,77,0,0.25), transparent 60%), radial-gradient(700px 500px at 90% 80%, rgba(255,140,75,0.18), transparent 60%)}
+.auth-left>*{position:relative}
+.auth-right{padding:28px;display:grid;place-items:center;background:var(--bg)}
+.auth-card{width:min(440px,100%);background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadowLg);padding:22px}
+.input{width:100%;height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-size:14px;outline:none;color:var(--ink)}
+.input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,77,0,0.12)}
+.label{font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block}
+@media(max-width:900px){.auth-wrap{grid-template-columns:1fr}.auth-left{display:none}}
+
+/* Mobile */
+.mobile-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:none;z-index:35;padding:6px 6px calc(6px + env(safe-area-inset-bottom));}
+.mobile-nav-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.mob-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:12px;font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;border:0;background:transparent}
+.mob-item.active{color:var(--orange);background:var(--orangeSoft)}
+@media(max-width:720px){.mobile-nav{display:block}.main{padding-bottom:72px}}
+
+/* Anim */
+.fade{animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* Chart */
+.chart-wrap{height:220px;position:relative}
+canvas{width:100%!important;height:100%!important}
+</style>
+</head>
+<body>
+<!-- AUTH VIEW -->
+<div id="authView" class="auth-wrap">
+  <div class="auth-left">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">RG</div>
+      <div>
+        <div style="font-weight:800;letter-spacing:-0.02em">Restaurant Growth OS</div>
+        <div style="font-size:12px;opacity:0.7;letter-spacing:0.06em;text-transform:uppercase;font-weight:700">Your AI co-pilot for restaurant growth</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;max-width:520px;margin:0 auto;width:100%;padding:32px 0">
+      <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);font-size:12px;font-weight:700;letter-spacing:0.04em;width:fit-content">
+        <span style="width:8px;height:8px;border-radius:999px;background:#22C55E;box-shadow:0 0 10px #22C55E"></span>
+        TRUSTED BY 2,400+ RESTAURANTS IN INDIA
+      </div>
+      <h1 style="font-size:42px;line-height:0.95;margin:18px 0 14px;letter-spacing:-0.04em">Grow your restaurant<br><span style="color:#FF8C4B">without replacing</span><br>your POS.</h1>
+      <p style="color:#A1A1AA;font-size:16px;line-height:1.6">Menu intelligence, pricing, reviews, CRM, WhatsApp marketing & daily AI advisor — sitting <em style="color:white;font-style:normal;border-bottom:1px dashed rgba(255,255,255,0.3)">above</em> your existing operations.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px">
+        <div style="padding:14px;border-radius:16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08)">
+          <div style="font-size:28px;font-weight:800;letter-spacing:-0.03em">+23%</div>
+          <div style="font-size:12px;opacity:0.7;font-weight:600">Avg. order value lift</div>
+        </div>
+        <div style="padding:14px;border-radius:16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08)">
+          <div style="font-size:28px;font-weight:800;letter-spacing:-0.03em">4.8/5</div>
+          <div style="font-size:12px;opacity:0.7;font-weight:600">Review response rating</div>
+        </div>
+      </div>
+      <div style="margin-top:22px;display:flex;align-items:center;gap:12px;color:#A1A1AA;font-size:13px">
+        <div style="display:flex;margin-left:2px"><img src="https://i.pravatar.cc/100?img=32" style="width:32px;height:32px;border-radius:999px;border:2px solid #0F1115;margin-left:-8px"><img src="https://i.pravatar.cc/100?img=15" style="width:32px;height:32px;border-radius:999px;border:2px solid #0F1115;margin-left:-8px"><img src="https://i.pravatar.cc/100?img=22" style="width:32px;height:32px;border-radius:999px;border:2px solid #0F1115;margin-left:-8px"></div>
+        “We fixed pricing & combos in 2 days. Health score went 58 → 84.”
+        <span style="color:white;font-weight:700">— Spice Route, Delhi</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:18px;font-size:12px;opacity:0.6;font-weight:600;letter-spacing:0.04em;text-transform:uppercase">
+      <span>✓ Multi-tenant</span><span>✓ RBAC</span><span>✓ Encrypted</span><span>✓ Audit logs</span>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-card fade">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h2 style="font-size:22px">Welcome back</h2>
+        <button onclick="toggleTheme()" class="icon-btn" title="Toggle theme" style="width:36px;height:36px">◐</button>
+      </div>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:16px">Sign in to your Growth OS workspace. New here? <a href="#" onclick="switchAuth('signup');return false" style="color:var(--orange);font-weight:700">Create account</a></p>
+      <div class="tabs" style="width:100%;justify-content:space-between;margin-bottom:16px">
+        <button class="tab active" id="tab-login" onclick="switchAuth('login')">Login</button>
+        <button class="tab" id="tab-signup" onclick="switchAuth('signup')">Sign up</button>
+        <button class="tab" onclick="demoLogin()">Demo →</button>
+      </div>
+      <div id="authFormArea">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div>
+            <label class="label">Work email</label>
+            <input id="authEmail" class="input" placeholder="owner@yourrestaurant.com" value="owner@spiceroute.in">
+          </div>
+          <div>
+            <label class="label">Password</label>
+            <input id="authPass" class="input" type="password" placeholder="••••••••" value="Growth@123">
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px">
+            <label style="display:flex;align-items:center;gap:8px;color:var(--muted);cursor:pointer"><input type="checkbox" checked> Remember me</label>
+            <a href="#" style="color:var(--orange);font-weight:700">Forgot password?</a>
+          </div>
+          <button class="btn btn-primary" style="width:100%;height:44px" onclick="handleAuth()">Continue →</button>
+          <div style="display:flex;align-items:center;gap:10px;color:var(--muted2);font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase"><span style="flex:1;height:1px;background:var(--line)"></span>OR<span style="flex:1;height:1px;background:var(--line)"></span></div>
+          <button class="btn btn-ghost" style="width:100%" onclick="handleAuth()">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Continue with Google
+          </button>
+          <p style="font-size:11px;color:var(--muted2);text-align:center;line-height:1.5">By continuing you agree to our Terms & Privacy. Tenant-isolated, encrypted & audit-logged.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP VIEW -->
+<div id="appView" class="app" style="display:none">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="logo">RG</div>
+      <div style="flex:1;min-width:0">
+        <h2>Restaurant Growth OS</h2>
+        <p>AI co-pilot for growth</p>
+      </div>
+      <button class="icon-btn" style="width:32px;height:32px" onclick="toggleTheme()">◐</button>
+    </div>
+    <div class="nav" id="nav">
+      <div class="nav-section">Grow</div>
+      <button class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Dashboard</button>
+      <button class="nav-item" data-view="advisor" onclick="switchView('advisor')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg> AI Advisor <span class="nav-badge" id="advisorBadge">5 new</span></button>
+      <button class="nav-item" data-view="intelligence" onclick="switchView('intelligence')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg> Menu Intelligence</button>
+      <button class="nav-item" data-view="scanner" onclick="switchView('scanner')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Menu Scanner <span class="nav-badge" style="background:#059669">OCR • AI</span></button>
+      <button class="nav-item" data-view="editor" onclick="switchView('editor')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Menu Editor <span id="menuCountBadge" class="nav-badge soon">24 items</span></button>
+      <div class="nav-section">Operate</div>
+      <button class="nav-item" data-view="campaigns" onclick="switchView('campaigns')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp Marketing <span class="nav-badge soon">Soon</span></button>
+      <button class="nav-item" data-view="crm" onclick="switchView('crm')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Customers • CRM</button>
+      <button class="nav-item" data-view="reviews" onclick="switchView('reviews')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Reviews <span class="nav-badge" style="background:#DC2626">3 alerts</span></button>
+      <button class="nav-item" data-view="analytics" onclick="switchView('analytics')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Analytics</button>
+      <div class="nav-section">System</div>
+      <button class="nav-item" data-view="branches" onclick="switchView('branches')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Branches & Staff</button>
+      <button class="nav-item" data-view="settings" onclick="switchView('settings')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 9 15a1.65 1.65 0 0 0-1-1.51V13a1.65 1.65 0 0 0 1-1.51 1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 0 1 11.43 6.78l.06.06A1.65 1.65 0 0 0 13.31 7.2 1.65 1.65 0 0 0 14.31 5.69V5a2 2 0 0 1 4 0v.69a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06A2 2 0 0 1 23.95 9.61l-.06.06A1.65 1.65 0 0 0 23.56 11.49 1.65 1.65 0 0 0 22.56 13v.5A1.65 1.65 0 0 0 23.56 15z"/></svg> Settings & Billing</button>
+    </div>
+    <div class="sidebar-foot">
+      <div class="restaurant-switch" onclick="openBranchSwitcher()">
+        <img id="sbLogo" src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=100&h=100&fit=crop" alt="">
+        <div style="flex:1;min-width:0">
+          <strong id="sbName" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Spice Route</strong>
+          <span id="sbBranch">CP, Delhi • 3 branches</span>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-ghost btn-xs" style="flex:1" onclick="logout()">Logout</button>
+        <button class="btn btn-dark btn-xs" style="flex:1" onclick="switchView('advisor')">Action Center →</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
+        <button class="icon-btn" style="display:none" id="menuBtn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div class="search" style="display:flex;align-items:center">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input placeholder="Search menu, customers, campaigns…  (⌘K)" onkeydown="if(event.key==='k' && event.metaKey) event.preventDefault()">
+        </div>
+        <div class="badge badge-green" style="display:none" id="envBadge">● LIVE • Tenant isolated</div>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" onclick="switchView('advisor')" title="Notifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-6 9-6 9h18s-6-2-6-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="badge-dot">5</span>
+        </button>
+        <button class="icon-btn" onclick="toggleTheme()" title="Theme">◐</button>
+        <div class="user-chip" onclick="switchView('settings')">
+          <div style="text-align:right;display:none" id="userInfoDesktop">
+            <strong id="topUserName">Aarav Mehta</strong>
+            <span>Owner • Admin</span>
+          </div>
+          <img src="https://i.pravatar.cc/100?img=14" alt="">
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- DASHBOARD -->
+      <section id="view-dashboard" class="fade">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:18px">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <h1 style="font-size:28px">Good morning, <span id="dashName">Aarav</span> 👋</h1>
+              <span class="badge badge-ink">Today • 25 Sep 2026</span>
+              <span class="badge badge-green">● All systems operational</span>
+            </div>
+            <p style="color:var(--muted);font-size:13px;margin-top:4px">Here’s what needs your attention today. <strong style="color:var(--ink)">“What should I do today?”</strong> — answered by AI.</p>
+          </div>
+          <div style="display:flex;gap:8px">
+            <select class="input" style="height:36px;width:auto;padding-right:28px;font-weight:600" onchange="updateDateRange(this.value)">
+              <option>Today</option>
+              <option selected>Last 7 days</option>
+              <option>Last 30 days</option>
+              <option>Custom range</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="switchView('scanner')">+ Upload Menu</button>
+            <button class="btn btn-primary btn-sm" onclick="switchView('advisor')">View AI Advisor →</button>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <div class="grid grid-4" style="margin-bottom:16px">
+          <div class="card metric">
+            <div class="metric-top">
+              <div>
+                <div class="kicker">Revenue</div>
+                <div class="metric-val" id="kpiRevenue">₹1,84,320</div>
+                <div class="metric-label">Last 7 days • 342 orders</div>
+              </div>
+              <div class="metric-icon" style="background:var(--greenSoft);color:var(--green)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            </div>
+            <div class="metric-change up">↗ +8.4% vs last week</div>
+            <canvas class="spark" id="sparkRevenue"></canvas>
+          </div>
+          <div class="card metric">
+            <div class="metric-top">
+              <div>
+                <div class="kicker">Orders</div>
+                <div class="metric-val">342</div>
+                <div class="metric-label">Avg. 48.8 / day</div>
+              </div>
+              <div class="metric-icon" style="background:var(--blueSoft);color:var(--blue)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+            </div>
+            <div class="metric-change up">↗ +5.1% • Healthy</div>
+            <canvas class="spark" id="sparkOrders"></canvas>
+          </div>
+          <div class="card metric">
+            <div class="metric-top">
+              <div>
+                <div class="kicker">Average Order Value</div>
+                <div class="metric-val" id="kpiAov">₹539</div>
+                <div class="metric-label">Per order</div>
+              </div>
+              <div class="metric-icon" style="background:var(--amberSoft);color:var(--amber)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+            </div>
+            <div class="metric-change down">↘ -2.3% • Needs attention</div>
+            <canvas class="spark" id="sparkAov"></canvas>
+          </div>
+          <div class="card" style="padding:16px;display:flex;gap:14px;align-items:center">
+            <div class="score-ring" style="--score:78"><div class="score-inner"><div style="text-align:center"><div class="score-num">78</div><div class="score-label">Growth</div></div></div></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:800;font-size:15px">Growth Score</div>
+              <div style="font-size:12px;color:var(--muted)">Good — 12 pts to “Excellent”</div>
+              <div style="display:flex;gap:6px;margin:10px 0 6px;flex-wrap:wrap">
+                <span class="badge badge-green">Menu 84</span><span class="badge badge-amber">Pricing 62</span><span class="badge badge-blue">Retention 71</span>
+              </div>
+              <div class="progress"><div style="width:78%;background:var(--orange)"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted2);margin-top:4px"><span>0</span><span>Elite 85+</span><span>100</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today -->
+        <div class="grid" style="grid-template-columns:1.35fr 0.65fr;gap:16px;margin-bottom:16px">
+          <div class="card" style="border:1px solid #FFD9C2">
+            <div style="padding:14px 16px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,var(--orangeSoft), var(--card));border-bottom:1px solid var(--line)">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="width:28px;height:28px;border-radius:999px;background:var(--orange);color:white;display:grid;place-items:center;font-size:14px">✦</span>
+                <strong>Today’s AI Recommendation</strong>
+                <span class="badge badge-amber">High confidence • 86%</span>
+              </div>
+              <span style="font-size:12px;color:var(--muted);font-weight:600">Updated 08:20 AM • Source: Orders + CRM</span>
+            </div>
+            <div style="padding:16px">
+              <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">
+                <img src="https://images.unsplash.com/photo-1534422298391-e4f640380802?w=200&h=200&fit=crop" style="width:88px;height:88px;border-radius:12px;object-fit:cover">
+                <div style="flex:1;min-width:220px">
+                  <div style="font-weight:800;font-size:16px;line-height:1.2">Launch “Momo + Fries” combo at ₹229</div>
+                  <div style="color:var(--muted);font-size:13px;margin-top:4px">Customers buying <strong style="color:var(--ink)">Chicken Momos (127 orders)</strong> also buy <strong style="color:var(--ink)">Peri-Peri Fries (89 orders)</strong> — co-occurrence 42%. Your AOV dropped 8% this week. This combo can recover it.</div>
+                  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px">
+                    <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line);text-align:center"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.05em;text-transform:uppercase">Expected impact</div><div style="font-weight:800;color:var(--green)">+6–9% AOV</div></div>
+                    <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line);text-align:center"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.05em;text-transform:uppercase">Margin</div><div style="font-weight:800">62% • ₹142</div></div>
+                    <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line);text-align:center"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.05em;text-transform:uppercase">Confidence</div><div style="font-weight:800;color:var(--blue)">High • 86%</div></div>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+                <button class="btn btn-primary btn-sm" onclick="toast('Combo created as draft — review in Menu Editor')">Apply → Create Combo</button>
+                <button class="btn btn-ghost btn-sm" onclick="switchView('advisor')">Edit</button>
+                <button class="btn btn-ghost btn-sm" onclick="toast('Scheduled for Monday 11am test')">Schedule Test</button>
+                <button class="btn btn-ghost btn-sm" onclick="this.closest('.card').style.opacity='0.6'">Dismiss</button>
+                <a href="#" onclick="switchView('advisor');return false" style="margin-left:auto;font-size:13px;font-weight:700;color:var(--orange);display:flex;align-items:center;gap:4px">View supporting metrics →</a>
+              </div>
+              <div style="margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--amberSoft);border:1px solid #FDE68A;font-size:12px;color:#92400E"><strong>Reason:</strong> Cross-sell affinity 0.42, time slot 7–10pm (peak), segment “Repeat” over-indexed. <strong>Source metric:</strong> 127→89 co-purchase, last 30 days, CP branch.</div>
+            </div>
+          </div>
+          <div class="grid" style="gap:16px">
+            <div class="card card-p" style="border-left:3px solid #DC2626">
+              <div style="display:flex;align-items:center;gap:8px"><span class="badge badge-amber">Top Alert</span><span style="margin-left:auto;font-size:12px;color:var(--muted)">2 hours ago</span></div>
+              <div style="font-weight:800;margin-top:8px">Negative review spike — Delivery</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:4px">3 reviews mentioning “late delivery” in 24h (avg 0.4/day). Sentiment -0.62.</div>
+              <div class="progress" style="margin-top:10px"><div style="width:68%;background:#DC2626"></div></div>
+              <div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-dark btn-xs" onclick="switchView('reviews')">View & respond</button><button class="btn btn-ghost btn-xs" onclick="toast('Muted for 24h')">Mute</button></div>
+            </div>
+            <div class="card card-p" style="border-left:3px solid var(--green)">
+              <div style="display:flex;align-items:center;gap:8px"><span class="badge badge-green">Top Opportunity</span><span class="badge badge-blue">Menu</span></div>
+              <div style="font-weight:800;margin-top:8px">Premium pricing ready</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:4px">“Truffle Mushroom Pizza” has 4.7★ and high reorder (38%). Test +₹40 without demand drop.</div>
+              <div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-primary btn-xs" onclick="switchView('intelligence')">Run price test</button><button class="btn btn-ghost btn-xs">Details</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Revenue + retention -->
+        <div class="grid grid-2" style="margin-bottom:16px">
+          <div class="card card-p">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <h3>Revenue & Orders</h3>
+              <div class="tabs"><button class="tab active">Daily</button><button class="tab">Weekly</button><button class="tab">Monthly</button></div>
+            </div>
+            <p style="font-size:12px;color:var(--muted);margin-top:4px">Non-fabricated: seeded demo data. ESTIMATED predictions are labeled.</p>
+            <div class="chart-wrap" style="margin-top:12px"><canvas id="revChart"></canvas></div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px">
+              <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line);text-align:center"><div style="font-size:11px;color:var(--muted);font-weight:700">Peak day</div><div style="font-weight:800">Saturday • ₹31k</div></div>
+              <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line);text-align:center"><div style="font-size:11px;color:var(--muted);font-weight:700">Avg Orders</div><div style="font-weight:800">49 / day</div></div>
+              <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line);text-align:center"><div style="font-size:11px;color:var(--muted);font-weight:700">Repeat rate</div><div style="font-weight:800;color:var(--green)">34.2% ↗</div></div>
+            </div>
+          </div>
+          <div class="card card-p">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <h3>Growth Score breakdown</h3>
+              <button class="btn btn-ghost btn-xs" onclick="switchView('intelligence')">How to improve →</button>
+            </div>
+            <div style="display:grid;gap:10px;margin-top:12px" id="growthBreakdown"></div>
+            <div class="divider" style="margin:14px 0"></div>
+            <h4 style="font-size:13px">Live Action Center</h4>
+            <div style="display:grid;gap:8px;margin-top:8px" id="miniActions"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="card card-p">
+            <h3>Top Products • Last 7 days</h3>
+            <div style="display:grid;gap:8px;margin-top:12px" id="topProducts"></div>
+          </div>
+          <div class="card card-p">
+            <h3>Low Performers • Needs attention</h3>
+            <p style="font-size:12px;color:var(--muted)">AI flags items with low views/add-to-cart or low margin leverage</p>
+            <div style="display:grid;gap:8px;margin-top:12px" id="lowProducts"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCANNER -->
+      <section id="view-scanner" style="display:none" class="fade">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px">
+          <div>
+            <h1 style="font-size:26px">AI Menu Scanner</h1>
+            <p style="color:var(--muted);font-size:13px">Upload image / PDF / Excel / CSV. OCR + AI structured extraction. Human-in-the-loop editing required.</p>
+          </div>
+          <div style="display:flex;gap:8px"><span class="badge badge-green">Provider-agnostic OCR</span><span class="badge badge-blue">AI extraction • No hallucinated ingredients</span></div>
+        </div>
+        <div class="grid" style="grid-template-columns:1.15fr 0.85fr;gap:16px">
+          <div class="card card-p">
+            <div id="dropZone" class="drop" ondragenter="dragEnter(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="handleDrop(event)">
+              <div style="width:56px;height:56px;border-radius:16px;background:var(--orangeSoft);color:var(--orange);display:grid;place-items:center;margin:0 auto 10px;font-size:22px">⬆</div>
+              <div style="font-weight:800;font-size:16px">Drop your menu here</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:4px">PNG, JPG, PDF, XLSX, CSV — up to 10 MB • Secure upload • Tenant-isolated storage (S3-compatible)</div>
+              <div style="display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap">
+                <label class="btn btn-primary btn-sm" style="cursor:pointer"><input type="file" id="fileInput" hidden accept=".png,.jpg,.jpeg,.pdf,.xlsx,.xls,.csv" onchange="handleFile(this.files)">Choose file</label>
+                <button class="btn btn-ghost btn-sm" onclick="loadDemoMenu()">Use demo menu →</button>
+                <button class="btn btn-ghost btn-sm" onclick="pasteText()">Paste text</button>
+              </div>
+              <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-size:11px;color:var(--muted2)">
+                <span>✓ Encrypted at rest</span><span>✓ Input validation</span><span>✓ Audit logged</span><span>✓ Rate-limited</span>
+              </div>
+            </div>
+
+            <div id="scanProgress" style="display:none;margin-top:14px">
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700"><span id="scanTitle">Uploading…</span><span id="scanPct">0%</span></div>
+              <div class="progress" style="margin-top:8px"><div id="scanBar" style="width:0%;background:var(--orange)"></div></div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;font-size:12px">
+                <div class="badge badge-blue" id="stepOCR">◷ OCR</div>
+                <div class="badge" style="background:var(--bg);border:1px solid var(--line)" id="stepAI">◷ AI extract</div>
+                <div class="badge" style="background:var(--bg);border:1px solid var(--line)" id="stepVal">◷ Validate</div>
+              </div>
+              <div style="font-size:12px;color:var(--muted);margin-top:8px" id="scanLog">Secure file upload → virus scan → OCR queued…</div>
+            </div>
+
+            <div id="extractedPreview" style="display:none;margin-top:16px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <h3>Extracted structure <span style="font-weight:500;color:var(--muted);font-size:13px" id="extractStats">(24 items • 5 categories)</span></h3>
+                <div style="display:flex;gap:8px"><button class="btn btn-ghost btn-xs" onclick="exportCSV()">Export CSV</button><button class="btn btn-dark btn-xs" onclick="switchView('editor')">Open in Editor →</button></div>
+              </div>
+              <div style="display:grid;gap:8px;margin-top:12px;max-height:420px;overflow:auto;padding-right:4px" id="extractList"></div>
+              <div style="margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--amberSoft);border:1px solid #FDE68A;font-size:12px;color:#92400E"><strong>Human review required:</strong> AI did not fabricate ingredients. Please verify prices & dietary tags before publishing. <a href="#" onclick="switchView('editor');return false" style="color:var(--orange);font-weight:800">Review in editor →</a></div>
+            </div>
+          </div>
+
+          <div style="display:grid;gap:16px">
+            <div class="card card-p">
+              <h3>What we extract</h3>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;font-size:13px">
+                <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line)"><strong>category</strong><div style="color:var(--muted)">e.g. Momos, Pizza</div></div>
+                <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line)"><strong>item name</strong><div style="color:var(--muted)">Chicken Momos</div></div>
+                <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line)"><strong>description</strong><div style="color:var(--muted)">SEO-ready copy</div></div>
+                <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line)"><strong>price</strong><div style="color:var(--muted)">₹199</div></div>
+                <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line)"><strong>variant / portion</strong><div style="color:var(--muted)">Half / Full</div></div>
+                <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line)"><strong>dietary • add-ons</strong><div style="color:var(--muted)">Veg, Jain, Extra cheese</div></div>
+              </div>
+              <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><span class="badge badge-violet">Image</span><span class="badge badge-violet">PDF</span><span class="badge badge-violet">Excel</span><span class="badge badge-violet">CSV</span></div>
+            </div>
+            <div class="card card-p">
+              <h3>Recent scans</h3>
+              <div style="display:grid;gap:8px;margin-top:12px" id="recentScans"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EDITOR -->
+      <section id="view-editor" style="display:none" class="fade">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px">
+          <div>
+            <h1 style="font-size:26px">Menu Editor</h1>
+            <p style="color:var(--muted);font-size:13px">Full manual control after AI extraction. No ingredient or nutrition claims are invented.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="branchFilter" class="input" style="height:36px;width:auto" onchange="renderMenu()"><option value="all">All branches</option><option value="CP">CP, Delhi</option><option value="GK">GK-1</option><option value="CyberHub">CyberHub</option></select>
+            <select id="catFilter" class="input" style="height:36px;width:auto" onchange="renderMenu()"><option value="all">All categories</option></select>
+            <input id="menuSearch" class="input" placeholder="Search items…" style="height:36px;width:180px" oninput="renderMenu()">
+            <button class="btn btn-ghost btn-sm" onclick="addCategory()">+ Category</button>
+            <button class="btn btn-primary btn-sm" onclick="addItem()">+ Item</button>
+          </div>
+        </div>
+        <div class="grid" style="grid-template-columns:280px 1fr;gap:16px">
+          <div class="card card-p" style="align-self:start;position:sticky;top:72px">
+            <div style="display:flex;align-items:center;justify-content:space-between"><h3>Categories</h3><span class="badge badge-ink" id="catCount">5</span></div>
+            <div style="display:grid;gap:6px;margin-top:12px" id="catList"></div>
+            <div class="divider" style="margin:14px 0"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><strong style="font-size:13px">Health quick glance</strong><a href="#" onclick="switchView('intelligence');return false" style="font-size:12px;color:var(--orange);font-weight:700">Full →</a></div>
+            <div style="display:grid;gap:8px;margin-top:10px;font-size:12px">
+              <div style="display:flex;justify-content:space-between"><span>Balance</span><span style="font-weight:700;color:var(--green)">Good</span></div>
+              <div class="progress"><div style="width:84%;background:var(--green)"></div></div>
+              <div style="display:flex;justify-content:space-between"><span>Pricing coverage</span><span style="font-weight:700;color:var(--amber)">62%</span></div>
+              <div class="progress"><div style="width:62%;background:var(--amber)"></div></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+              <span class="badge badge-green">● Autosaved</span>
+              <span class="badge" style="background:var(--bg);border:1px solid var(--line)">Drag to reorder • Tenant-isolated</span>
+              <span style="margin-left:auto;display:flex;gap:8px"><button class="btn btn-ghost btn-xs" onclick="exportCSV()">Export CSV</button><button class="btn btn-dark btn-xs" onclick="switchView('intelligence')">Analyze menu →</button></span>
+            </div>
+            <div style="display:grid;gap:10px" id="menuList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INTELLIGENCE -->
+      <section id="view-intelligence" style="display:none" class="fade">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px">
+          <div>
+            <h1 style="font-size:26px">Menu Intelligence</h1>
+            <p style="color:var(--muted);font-size:13px">Health score • Price analysis • Upsell / Combo / Premium opportunities. All estimates labeled.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="reanalyze()">↻ Re-analyze with AI</button>
+        </div>
+        <div class="grid" style="grid-template-columns:360px 1fr;gap:16px">
+          <div class="card card-p" style="text-align:center">
+            <div class="score-ring" style="--score:84;margin:0 auto"><div class="score-inner"><div><div class="score-num" style="font-size:28px">84</div><div class="score-label">Health Score</div></div></div></div>
+            <div style="font-weight:800;margin-top:10px;font-size:16px">Excellent</div>
+            <div style="font-size:13px;color:var(--muted)">Top 20% of QSRs in Delhi NCR</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;text-align:left">
+              <div style="padding:10px;border-radius:12px;background:var(--greenSoft);border:1px solid #A7F3D0"><div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--green)">Strength</div><div style="font-weight:700;font-size:13px">Category balance</div></div>
+              <div style="padding:10px;border-radius:12px;background:var(--amberSoft);border:1px solid #FDE68A"><div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--amber)">Watch</div><div style="font-weight:700;font-size:13px">Pricing data 62%</div></div>
+            </div>
+            <div style="display:grid;gap:8px;margin-top:14px;text-align:left" id="healthFactors"></div>
+          </div>
+          <div class="grid" style="gap:16px">
+            <div class="grid grid-3">
+              <div class="card card-p"><div class="kicker">Price analysis</div><div style="font-weight:800;margin-top:6px">3 items under-priced</div><div style="font-size:13px;color:var(--muted)">vs. market & margin targets</div><button class="btn btn-ghost btn-xs" style="margin-top:10px;width:100%" onclick="openPricing()">View pricing →</button></div>
+              <div class="card card-p"><div class="kicker">Upsell opportunity</div><div style="font-weight:800;margin-top:6px">₹12,400 / month <span style="font-weight:600;color:var(--green);font-size:12px">EST.</span></div><div style="font-size:13px;color:var(--muted)">Add-ons: cheese, dips</div><button class="btn btn-ghost btn-xs" style="margin-top:10px;width:100%" onclick="toast('Add-on bundle created')">Create bundle</button></div>
+              <div class="card card-p"><div class="kicker">Combo opportunity</div><div style="font-weight:800;margin-top:6px">2 combos ready</div><div style="font-size:13px;color:var(--muted)">Momo+Fries, Pizza+Coke</div><button class="btn btn-primary btn-xs" style="margin-top:10px;width:100%" onclick="switchView('advisor')">Generate combos</button></div>
+            </div>
+            <div class="card card-p">
+              <div style="display:flex;align-items:center;justify-content:space-between"><h3>Pricing Intelligence (experiments, not “correct price”)</h3><span class="badge badge-amber">Needs food-cost to be precise</span></div>
+              <div style="overflow:auto;margin-top:12px">
+                <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:560px">
+                  <thead style="color:var(--muted);font-size:11px;letter-spacing:0.06em;text-transform:uppercase"><tr><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Item</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--line)">Price</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--line)">Food cost</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--line)">Gross margin</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--line)">Suggestion</th></tr></thead>
+                  <tbody id="pricingRows"></tbody>
+                </table>
+              </div>
+              <p style="font-size:11px;color:var(--muted2);margin-top:8px">We show experiments (e.g., +₹20, +₹40) with expected impact ranges — you decide. No single “correct” price is claimed.</p>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-2" style="margin-top:16px">
+          <div class="card card-p">
+            <h3>AI-optimized descriptions (SEO, never invented)</h3>
+            <div style="display:grid;gap:10px;margin-top:12px" id="descList"></div>
+          </div>
+          <div class="card card-p">
+            <h3>Category balance</h3>
+            <div class="chart-wrap" style="height:180px"><canvas id="catChart"></canvas></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;font-size:12px" id="catBalance"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ADVISOR -->
+      <section id="view-advisor" style="display:none" class="fade">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px">
+          <div>
+            <h1 style="font-size:26px">AI Restaurant Advisor</h1>
+            <p style="color:var(--muted);font-size:13px">Daily recommendations with reason, metric, impact, confidence & action. You approve every change.</p>
+          </div>
+          <div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" onclick="toast('Advisor polling: every 6h')">● Auto-refresh ON</button><button class="btn btn-dark btn-sm" onclick="generateAdvisor()">✦ Generate new</button></div>
+        </div>
+        <div class="grid" style="grid-template-columns:1fr 320px;gap:16px">
+          <div style="display:grid;gap:12px" id="advisorList"></div>
+          <div style="display:grid;gap:16px;align-content:start">
+            <div class="card card-p">
+              <h3>Action Center</h3>
+              <p style="font-size:12px;color:var(--muted)">Every recommendation has: Apply • Edit • Dismiss • Schedule • View Details</p>
+              <div style="display:grid;gap:8px;margin-top:12px">
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span>Pending</span><strong id="pendingCount">5</strong></div>
+                <div class="progress"><div style="width:62%;background:var(--orange)"></div></div>
+                <div style="display:flex;gap:8px;margin-top:6px"><button class="btn btn-primary btn-xs" style="flex:1" onclick="toast('All pending applied as drafts')">Apply all</button><button class="btn btn-ghost btn-xs" style="flex:1" onclick="toast('Dismissed low-confidence')">Dismiss low</button></div>
+              </div>
+            </div>
+            <div class="card card-p">
+              <h3>Notification rules</h3>
+              <div style="display:grid;gap:10px;margin-top:12px;font-size:13px">
+                <label style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span>Sales drops &gt;10%</span><input type="checkbox" checked></label>
+                <label style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span>Negative review spikes</span><input type="checkbox" checked></label>
+                <label style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span>Customer churn risk</span><input type="checkbox" checked></label>
+                <label style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span>Campaign opportunities</span><input type="checkbox" checked></label>
+              </div>
+            </div>
+            <div class="card card-p" style="background:linear-gradient(135deg,var(--ink),#2A2A30);color:white;border-color:transparent">
+              <div style="font-weight:800">Need a human?</div>
+              <div style="font-size:13px;opacity:0.8;margin-top:4px">Talk to a restaurant growth consultant. Free 30-min menu audit.</div>
+              <button class="btn" style="background:white;color:var(--ink);margin-top:12px;width:100%" onclick="toast('Consultant will call you at 11am tomorrow')">Book audit →</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- OTHER SECTIONS PLACEHOLDER -->
+      <section id="view-campaigns" style="display:none" class="fade">
+        <div class="card card-p" style="text-align:center;padding:40px 20px">
+          <div style="width:56px;height:56px;border-radius:16px;background:var(--greenSoft);color:var(--green);display:grid;place-items:center;margin:0 auto;font-size:22px">💬</div>
+          <h2 style="margin-top:12px">WhatsApp Marketing</h2>
+          <p style="color:var(--muted);max-width:560px;margin:8px auto">Campaigns via approved WhatsApp Business API — segments, templates, scheduling, opt-in/out, delivery & conversion tracking. Respects consent & policies.</p>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px">
+            <button class="btn btn-primary btn-sm" onclick="openCampaignGen()">✦ Generate campaign with AI</button>
+            <button class="btn btn-ghost btn-sm" onclick="toast('Templates: Awaiting WhatsApp approval')">Manage templates</button>
+          </div>
+          <div style="display:inline-block;margin-top:16px;padding:8px 12px;border-radius:999px;background:var(--amberSoft);border:1px solid #FDE68A;font-size:12px;font-weight:700;color:#92400E">Architecture ready: campaigns, campaign_messages, campaign_events, consent tracking</div>
+        </div>
+        <div class="grid grid-2" style="margin-top:16px">
+          <div class="card card-p"><h3>AI Campaign Generator</h3><div style="display:grid;gap:10px;margin-top:12px"><div><label class="label">Objective</label><select class="input"><option>Win back dormant</option><option>Boost weekday lunch</option><option>Launch combo</option></select></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label class="label">Segment</label><select class="input"><option>Dormant (30d)</option><option>VIP</option></select></div><div><label class="label">Budget</label><input class="input" value="₹5,000"></div></div><button class="btn btn-dark" style="width:100%" onclick="toast('Generated: WhatsApp + SMS + IG caption')">Generate copies →</button></div></div>
+          <div class="card card-p"><h3>Sample output</h3><div style="padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line);font-size:13px;margin-top:12px"><strong>WhatsApp:</strong> Hi {{name}}! Missed your fav Chicken Momos? 🥟 Get Momo+Fries combo at ₹229 this week only. Reply YES to claim. <span style="color:var(--muted)">(Opt-out: STOP)</span><div style="margin-top:8px"><strong>SMS:</strong> Spice Route: Momo+Fries ₹229 till Sunday. Order: spiceroute.in</div><div style="margin-top:8px"><strong>IG Caption:</strong> The duo you didn’t know you needed 😍 Momos + Fries = ❤️ Combo at ₹229 — this week only!</div></div></div>
+        </div>
+      </section>
+
+      <section id="view-crm" style="display:none" class="fade">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+          <h1 style="font-size:26px">Customers • CRM</h1>
+          <div style="display:flex;gap:8px"><span class="badge badge-green">Consent-based</span><button class="btn btn-primary btn-sm" onclick="toast('Import CSV: consent field required')">Import customers</button></div>
+        </div>
+        <div class="grid grid-4">
+          <div class="card card-p" style="text-align:center"><div style="font-size:22px;font-weight:800">3,842</div><div style="font-size:12px;color:var(--muted)">Total customers</div><span class="badge badge-green" style="margin-top:6px">+214 this week</span></div>
+          <div class="card card-p" style="text-align:center"><div style="font-size:22px;font-weight:800">34.2%</div><div style="font-size:12px;color:var(--muted)">Repeat rate</div><span class="badge badge-blue">VIP 312</span></div>
+          <div class="card card-p" style="text-align:center"><div style="font-size:22px;font-weight:800">₹647</div><div style="font-size:12px;color:var(--muted)">Avg lifetime value</div><span class="badge badge-amber">Dormant 482</span></div>
+          <div class="card card-p" style="text-align:center"><div style="font-size:22px;font-weight:800">482</div><div style="font-size:12px;color:var(--muted)">Churn risk</div><button class="btn btn-dark btn-xs" style="margin-top:6px" onclick="switchView('campaigns')">Win-back campaign →</button></div>
+        </div>
+        <div class="card card-p" style="margin-top:16px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn btn-dark btn-xs">All</button><button class="btn btn-ghost btn-xs">New</button><button class="btn btn-ghost btn-xs">Repeat</button><button class="btn btn-ghost btn-xs">VIP</button><button class="btn btn-ghost btn-xs">Dormant</button><button class="btn btn-ghost btn-xs">Lost</button><span style="margin-left:auto;display:flex;gap:8px"><input class="input" placeholder="Search customer…" style="height:32px;width:200px"><button class="btn btn-ghost btn-xs">Export</button></span></div>
+          <div style="overflow:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:700px">
+              <thead style="color:var(--muted);font-size:11px;letter-spacing:0.06em;text-transform:uppercase"><tr><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Customer</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Segment</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--line)">Orders</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--line)">Last order</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--line)">AOV</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Fav category</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--line)">Action</th></tr></thead>
+              <tbody id="crmRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-reviews" style="display:none" class="fade">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+          <h1 style="font-size:26px">Review Management</h1>
+          <div style="display:flex;gap:8px"><span class="badge badge-blue">AI sentiment</span><button class="btn btn-primary btn-sm" onclick="toast('Connected: Google + Swiggy + Zomato (mock)')">Connect sources</button></div>
+        </div>
+        <div class="grid grid-3">
+          <div class="card card-p" style="text-align:center"><div style="font-size:28px;font-weight:800">4.3 ★</div><div style="font-size:12px;color:var(--muted)">Avg rating • 1,284 reviews</div><div class="progress" style="margin-top:10px"><div style="width:86%;background:var(--amber)"></div></div><div style="font-size:11px;color:var(--muted2);margin-top:4px">Sentiment +0.31 (positive)</div></div>
+          <div class="card card-p"><div class="kicker">Complaint clusters</div><div style="display:grid;gap:6px;margin-top:10px;font-size:13px"><div style="display:flex;justify-content:space-between"><span>Late delivery</span><span class="badge badge-amber">23</span></div><div style="display:flex;justify-content:space-between"><span>Packaging</span><span class="badge badge-blue">11</span></div><div style="display:flex;justify-content:space-between"><span>Portion size</span><span class="badge" style="background:var(--bg);border:1px solid var(--line)">7</span></div></div></div>
+          <div class="card card-p"><div class="kicker">Response drafts</div><div style="font-size:13px;margin-top:8px">AI drafts ready: <strong>8</strong> • Avg response time <strong>4.2h EST.</strong></div><button class="btn btn-dark btn-sm" style="width:100%;margin-top:10px" onclick="toast('Opening review inbox')">Open inbox →</button></div>
+        </div>
+        <div style="display:grid;gap:10px;margin-top:16px" id="reviewList"></div>
+      </section>
+
+      <section id="view-analytics" style="display:none" class="fade">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+          <h1 style="font-size:26px">Analytics</h1>
+          <div class="tabs"><button class="tab active">Daily</button><button class="tab">Weekly</button><button class="tab">Monthly</button><button class="tab">Custom</button></div>
+        </div>
+        <div class="grid grid-3">
+          <div class="card card-p"><div class="kicker">Customer retention</div><div style="font-weight:800;margin-top:6px">34.2% repeat</div><div class="chart-wrap" style="height:120px"><canvas id="retChart"></canvas></div></div>
+          <div class="card card-p"><div class="kicker">Campaign performance</div><div style="font-weight:800;margin-top:6px">18.4% open • 4.2% conv.</div><div class="chart-wrap" style="height:120px"><canvas id="campChart"></canvas></div></div>
+          <div class="card card-p"><div class="kicker">Review sentiment</div><div style="font-weight:800;margin-top:6px">Positive 62% • Negative 14%</div><div class="chart-wrap" style="height:120px"><canvas id="sentChart"></canvas></div></div>
+        </div>
+        <div class="card card-p" style="margin-top:16px">
+          <h3>Orders & Revenue trend</h3>
+          <div class="chart-wrap" style="height:220px"><canvas id="anaChart"></canvas></div>
+        </div>
+      </section>
+
+      <section id="view-branches" style="display:none" class="fade">
+        <h1 style="font-size:26px">Branches & Staff</h1>
+        <p style="color:var(--muted);font-size:13px">Multi-tenant • RBAC • Tenant isolation enforced at row-level.</p>
+        <div class="grid grid-3" style="margin-top:16px">
+          <div class="card card-p"><div style="display:flex;align-items:center;gap:10px"><img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200&h=200&fit=crop" style="width:48px;height:48px;border-radius:10px;object-fit:cover"><div><strong>CP, Delhi</strong><div style="font-size:12px;color:var(--muted)">Flagship • 12 staff</div></div><span class="badge badge-green" style="margin-left:auto">Active</span></div><div style="display:grid;gap:6px;margin-top:12px;font-size:13px"><div style="display:flex;justify-content:space-between"><span>Revenue (7d)</span><strong>₹1,12,400</strong></div><div style="display:flex;justify-content:space-between"><span>Orders</span><strong>214</strong></div></div></div>
+          <div class="card card-p"><div style="display:flex;align-items:center;gap:10px"><img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?w=200&h=200&fit=crop" style="width:48px;height:48px;border-radius:10px;object-fit:cover"><div><strong>GK-1</strong><div style="font-size:12px;color:var(--muted)">South Delhi • 8 staff</div></div><span class="badge badge-green" style="margin-left:auto">Active</span></div><div style="display:grid;gap:6px;margin-top:12px;font-size:13px"><div style="display:flex;justify-content:space-between"><span>Revenue (7d)</span><strong>₹48,920</strong></div><div style="display:flex;justify-content:space-between"><span>Orders</span><strong>88</strong></div></div></div>
+          <div class="card card-p" style="border:1.5px dashed var(--line);display:grid;place-items:center;min-height:140px"><button class="btn btn-ghost" onclick="toast('Branch onboarding: GSTIN, FSSAI, address')">+ Add branch</button></div>
+        </div>
+        <div class="card card-p" style="margin-top:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between"><h3>Staff & Roles</h3><button class="btn btn-primary btn-xs" onclick="toast('Invite sent: RBAC enforced')">Invite staff</button></div>
+          <div style="overflow:auto;margin-top:12px">
+            <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:600px">
+              <thead style="color:var(--muted);font-size:11px;letter-spacing:0.06em;text-transform:uppercase"><tr><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Member</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Role</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Branch</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Last active</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--line)">Actions</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:10px;border-bottom:1px solid var(--line)"><div style="display:flex;align-items:center;gap:10px"><img src="https://i.pravatar.cc/100?img=14" style="width:32px;height:32px;border-radius:999px"><strong>Aarav Mehta</strong></div></td><td style="padding:10px;border-bottom:1px solid var(--line)"><span class="badge badge-ink">Owner</span></td><td style="padding:10px;border-bottom:1px solid var(--line)">All</td><td style="padding:10px;border-bottom:1px solid var(--line)">Now</td><td style="padding:10px;border-bottom:1px solid var(--line);text-align:right"><span style="color:var(--muted)">Admin</span></td></tr>
+                <tr><td style="padding:10px;border-bottom:1px solid var(--line)"><div style="display:flex;align-items:center;gap:10px"><img src="https://i.pravatar.cc/100?img=32" style="width:32px;height:32px;border-radius:999px"><strong>Priya Sharma</strong></div></td><td style="padding:10px;border-bottom:1px solid var(--line)"><span class="badge badge-blue">Admin</span></td><td style="padding:10px;border-bottom:1px solid var(--line)">CP, Delhi</td><td style="padding:10px;border-bottom:1px solid var(--line)">2h ago</td><td style="padding:10px;border-bottom:1px solid var(--line);text-align:right"><button class="btn btn-ghost btn-xs">Manage</button></td></tr>
+                <tr><td style="padding:10px"><div style="display:flex;align-items:center;gap:10px"><img src="https://i.pravatar.cc/100?img=15" style="width:32px;height:32px;border-radius:999px"><strong>Rohan Gupta</strong></div></td><td style="padding:10px"><span class="badge" style="background:var(--bg);border:1px solid var(--line)">Staff</span></td><td style="padding:10px">GK-1</td><td style="padding:10px">Yesterday</td><td style="padding:10px;text-align:right"><button class="btn btn-ghost btn-xs">Manage</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-settings" style="display:none" class="fade">
+        <h1 style="font-size:26px">Settings & Billing</h1>
+        <div class="grid grid-2" style="margin-top:16px">
+          <div class="card card-p">
+            <h3>Workspace</h3>
+            <div style="display:grid;gap:12px;margin-top:12px">
+              <div><label class="label">Restaurant name</label><input class="input" value="Spice Route"></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label class="label">Type</label><select class="input"><option>QSR</option><option>Cafe</option><option>Cloud Kitchen</option></select></div><div><label class="label">GSTIN</label><input class="input" value="07ABCDE1234F1Z5"></div></div>
+              <div><label class="label">S3 Storage</label><div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px">s3://rgos-tenant-spiceroute/menus/ • encrypted • tenant-isolated</div></div>
+            </div>
+          </div>
+          <div class="card card-p">
+            <h3>Subscription</h3>
+            <div style="padding:14px;border-radius:16px;background:linear-gradient(135deg, var(--ink), #2A2A30);color:white;margin-top:12px">
+              <div style="display:flex;align-items:center;justify-content:space-between"><strong>Growth Plan</strong><span class="badge" style="background:white;color:var(--ink)">Active</span></div>
+              <div style="font-size:28px;font-weight:800;margin-top:8px">₹2,999 <span style="font-size:14px;font-weight:600;opacity:0.7">/ month</span></div>
+              <div style="font-size:13px;opacity:0.8">5 branches • Unlimited menus • AI advisor • WhatsApp credits 2,000</div>
+              <button class="btn" style="background:white;color:var(--ink);width:100%;margin-top:12px" onclick="toast('Billing portal: Stripe (mock)')">Manage billing →</button>
+            </div>
+            <div style="display:grid;gap:8px;margin-top:14px;font-size:13px">
+              <div style="display:flex;justify-content:space-between"><span>Invoices</span><a href="#" style="color:var(--orange);font-weight:700">View all</a></div>
+              <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line);display:flex;justify-content:space-between"><span>Sep 2026 — Paid</span><strong>₹2,999</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-p" style="margin-top:16px">
+          <h3>Architecture & Security</h3>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px;font-size:13px">
+            <div style="padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line)"><strong>Multi-tenant</strong><div style="color:var(--muted)">Row-level tenant_id on every table • RLS</div></div>
+            <div style="padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line)"><strong>Auth</strong><div style="color:var(--muted)">JWT + secure httpOnly • Google OAuth • RBAC</div></div>
+            <div style="padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line)"><strong>Background jobs</strong><div style="color:var(--muted)">Redis + BullMQ • OCR & AI queues</div></div>
+            <div style="padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line)"><strong>AI layer</strong><div style="color:var(--muted)">Provider-agnostic • No fabricated claims</div></div>
+            <div style="padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line)"><strong>Audit logs</strong><div style="color:var(--muted)">Every write + AI action logged</div></div>
+            <div style="padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line)"><strong>Privacy</strong><div style="color:var(--muted)">Consent DB • Opt-in/out • Webhook verify</div></div>
+          </div>
+        </div>
+      </section>
+
+      <div style="text-align:center;padding:18px;color:var(--muted2);font-size:11px;letter-spacing:0.04em;text-transform:uppercase;font-weight:700">© 2026 Restaurant Growth OS • Sits above your POS • Tenant-isolated • Encrypted • Audit-logged • v1.0 — First Build: Auth • Onboarding • Scanner • Editor • Intelligence • Advisor • Dashboard</div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobileNav" style="display:none">
+  <div class="mobile-nav-grid">
+    <button class="mob-item active" data-mob="dashboard" onclick="switchView('dashboard')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Home</button>
+    <button class="mob-item" data-mob="scanner" onclick="switchView('scanner')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Scan</button>
+    <button class="mob-item" data-mob="editor" onclick="switchView('editor')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Menu</button>
+    <button class="mob-item" data-mob="advisor" onclick="switchView('advisor')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>AI</button>
+    <button class="mob-item" data-mob="crm" onclick="switchView('crm')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>CRM</button>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal" id="onboardModal">
+  <div class="modal-card">
+    <div class="modal-head"><h3 id="onboardTitle">Welcome — set up your restaurant</h3><button class="icon-btn" style="width:32px;height:32px" onclick="closeOnboard()">✕</button></div>
+    <div class="modal-body" id="onboardBody"></div>
+  </div>
+</div>
+
+<div class="modal" id="editModal">
+  <div class="modal-card">
+    <div class="modal-head"><h3 id="editTitle">Edit item</h3><button class="icon-btn" style="width:32px;height:32px" onclick="closeModal('editModal')">✕</button></div>
+    <div class="modal-body" id="editBody"></div>
+  </div>
+</div>
+
+<div class="modal" id="campaignModal">
+  <div class="modal-card">
+    <div class="modal-head"><h3>AI Campaign Generator</h3><button class="icon-btn" style="width:32px;height:32px" onclick="closeModal('campaignModal')">✕</button></div>
+    <div class="modal-body" id="campaignBody"></div>
+  </div>
+</div>
+
+<div id="toast" style="position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:10px 14px;border-radius:999px;font-size:13px;font-weight:600;display:none;z-index:80;box-shadow:0 10px 30px rgba(0,0,0,0.2);max-width:90vw;text-align:center"></div>
+
+<script>
+// Theme
+function toggleTheme(){
+  const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme', isDark?'light':'dark');
+  document.body.setAttribute('data-theme', isDark?'light':'dark');
+  localStorage.setItem('rgos-theme', isDark?'light':'dark');
+}
+(function(){
+  const t = localStorage.getItem('rgos-theme');
+  if(t==='dark'){ document.documentElement.setAttribute('data-theme','dark'); document.body.setAttribute('data-theme','dark'); }
+  if(window.innerWidth<=720){ document.getElementById('menuBtn').style.display='grid'; document.getElementById('mobileNav').style.display='block'; }
+})();
+
+// Auth
+let authMode='login';
+function switchAuth(m){
+  authMode=m;
+  document.getElementById('tab-login').classList.toggle('active', m==='login');
+  document.getElementById('tab-signup').classList.toggle('active', m==='signup');
+}
+function demoLogin(){ document.getElementById('authEmail').value='owner@spiceroute.in'; handleAuth(); }
+function handleAuth(){
+  const email=document.getElementById('authEmail').value.trim();
+  const name=email.split('@')[0].replace('.',' ').replace(/\b\w/g,s=>s.toUpperCase()) || 'Aarav Mehta';
+  const first=name.split(' ')[0];
+  localStorage.setItem('rgos-user', JSON.stringify({email, name, first}));
+  // check onboarded
+  const onboarded=localStorage.getItem('rgos-onboarded');
+  document.getElementById('authView').style.display='none';
+  document.getElementById('appView').style.display='flex';
+  document.getElementById('envBadge').style.display='inline-flex';
+  document.getElementById('topUserName').textContent=name;
+  document.getElementById('dashName').textContent=first;
+  document.getElementById('userInfoDesktop').style.display='block';
+  if(!onboarded) openOnboard();
+  initApp();
+}
+function logout(){
+  document.getElementById('appView').style.display='none';
+  document.getElementById('authView').style.display='grid';
+}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.display='block';
+  clearTimeout(t._tm);
+  t._tm=setTimeout(()=>t.style.display='none', 2800);
+}
+
+// Onboarding
+let onboardStep=0;
+const onboardSteps=[
+  {title:'Your restaurant', html:`
+    <div style="display:grid;gap:12px">
+      <div><label class="label">Restaurant name</label><input id="obName" class="input" value="Spice Route"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="label">Type</label><select id="obType" class="input"><option>QSR</option><option selected>Independent Restaurant</option><option>Cafe</option><option>Cloud Kitchen</option><option>Fast-food</option></select></div>
+        <div><label class="label">Cuisine</label><input id="obCuisine" class="input" value="North Indian • Momos • Pizza"></div>
+      </div>
+      <div><label class="label">Primary branch address</label><input class="input" value="Connaught Place, Block A, New Delhi"></div>
+      <div style="padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line);font-size:12px;color:var(--muted)">Multi-tenant: this creates <code>restaurant_id</code> + <code>branch_id</code> with row-level isolation. You can add 3 branches in next step.</div>
+    </div>`},
+  {title:'Branches', html:`
+    <div style="display:grid;gap:12px">
+      <div style="display:flex;gap:8px;align-items:center"><strong>Branches</strong><span class="badge badge-green">3 configured</span><button class="btn btn-ghost btn-xs" style="margin-left:auto" onclick="toast('Branch added: CyberHub')">+ Add branch</button></div>
+      <div style="display:grid;gap:8px">
+        <div style="padding:12px;border-radius:12px;border:1px solid var(--line);display:flex;gap:10px;align-items:center"><span style="width:36px;height:36px;border-radius:10px;background:var(--orangeSoft);display:grid;place-items:center">🏬</span><div><strong>CP, Delhi — Flagship</strong><div style="font-size:12px;color:var(--muted)">Connaught Place • 12 staff</div></div><span class="badge badge-ink" style="margin-left:auto">Primary</span></div>
+        <div style="padding:12px;border-radius:12px;border:1px solid var(--line);display:flex;gap:10px;align-items:center"><span style="width:36px;height:36px;border-radius:10px;background:var(--bg);display:grid;place-items:center">📍</span><div><strong>GK-1, South Delhi</strong><div style="font-size:12px;color:var(--muted)">M Block • 8 staff</div></div><label style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700"><input type="checkbox" checked> Active</label></div>
+        <div style="padding:12px;border-radius:12px;border:1px solid var(--line);display:flex;gap:10px;align-items:center"><span style="width:36px;height:36px;border-radius:10px;background:var(--bg);display:grid;place-items:center">📍</span><div><strong>CyberHub, Gurgaon</strong><div style="font-size:12px;color:var(--muted)">DLF Cyber City • 6 staff</div></div><label style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700"><input type="checkbox" checked> Active</label></div>
+      </div>
+    </div>`},
+  {title:'Team & roles', html:`
+    <div style="display:grid;gap:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="label">Owner email (you)</label><input class="input" value="owner@spiceroute.in" disabled></div>
+        <div><label class="label">Role</label><input class="input" value="Owner — full access" disabled></div>
+      </div>
+      <div style="padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line)">
+        <strong>Invite staff</strong>
+        <div style="display:grid;grid-template-columns:1fr 140px 80px;gap:8px;margin-top:8px">
+          <input class="input" placeholder="email@spiceroute.in" value="manager@spiceroute.in">
+          <select class="input"><option>Admin</option><option>Staff</option></select>
+          <button class="btn btn-dark btn-sm" onclick="toast('Invite sent — RBAC enforced')">Invite</button>
+        </div>
+        <div style="font-size:11px;color:var(--muted2);margin-top:6px">RBAC: Owner > Admin > Staff • Branch-scoped permissions • Audit logged</div>
+      </div>
+    </div>`},
+  {title:'Connect POS (optional)', html:`
+    <div style="display:grid;gap:12px;text-align:center;padding:10px 0">
+      <div style="width:56px;height:56px;border-radius:16px;background:var(--blueSoft);color:var(--blue);display:grid;place-items:center;margin:0 auto;font-size:22px">◈</div>
+      <div><strong>We sit above your POS — no replacement needed</strong><div style="font-size:13px;color:var(--muted);margin-top:4px">Import orders via CSV / Sheets / API when ready. You can start with menu scanner right away.</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:left;margin-top:6px">
+        <div style="padding:12px;border-radius:12px;border:1px solid var(--line)"><strong>Petpooja</strong><div style="font-size:12px;color:var(--muted)">API • Webhook</div></div>
+        <div style="padding:12px;border-radius:12px;border:1px solid var(--line)"><strong>Posist</strong><div style="font-size:12px;color:var(--muted)">API</div></div>
+        <div style="padding:12px;border-radius:12px;border:1px solid var(--line)"><strong>CSV / Excel</strong><div style="font-size:12px;color:var(--muted)">Manual</div></div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;justify-content:center;font-size:13px;font-weight:600"><input type="checkbox" checked> Skip for now — I’ll import later</label>
+    </div>`},
+  {title:'You’re all set ✨', html:`
+    <div style="text-align:center;padding:10px 0">
+      <div style="width:64px;height:64px;border-radius:999px;background:var(--greenSoft);color:var(--green);display:grid;place-items:center;margin:0 auto;font-size:28px">✓</div>
+      <h2 style="margin-top:12px">Workspace ready</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px">Tenant created • Branches linked • Roles set • Growth Score baseline queued</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;text-align:left">
+        <button class="btn btn-ghost" onclick="closeOnboard(); switchView('scanner')" style="height:44px">Scan my menu →</button>
+        <button class="btn btn-primary" onclick="closeOnboard(); switchView('dashboard')" style="height:44px">Go to dashboard →</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted2);margin-top:10px">Next: Upload menu → AI extracts → Edit → Health Score → Advisor</div>
+    </div>`},
+];
+function openOnboard(){ onboardStep=0; renderOnboard(); document.getElementById('onboardModal').classList.add('open'); }
+function closeOnboard(){ document.getElementById('onboardModal').classList.remove('open'); localStorage.setItem('rgos-onboarded','1'); if(document.getElementById('obName')){ document.getElementById('sbName').textContent=document.getElementById('obName').value; }}
+function renderOnboard(){
+  const s=onboardSteps[onboardStep];
+  document.getElementById('onboardTitle').textContent=`Step ${onboardStep+1} of ${onboardSteps.length} — ${s.title}`;
+  document.getElementById('onboardBody').innerHTML=s.html + `
+    <div style="display:flex;gap:8px;justify-content:space-between;margin-top:18px">
+      <button class="btn btn-ghost btn-sm" onclick="if(onboardStep>0){onboardStep--;renderOnboard()}else closeOnboard()" ${onboardStep===0?'style="visibility:hidden"':''}>← Back</button>
+      <div style="display:flex;gap:8px">
+        ${onboardStep<onboardSteps.length-1 ? `<button class="btn btn-dark btn-sm" onclick="onboardStep++;renderOnboard()">Continue →</button>`:`<button class="btn btn-primary btn-sm" onclick="closeOnboard()">Enter Growth OS →</button>`}
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;justify-content:center;margin-top:14px">${onboardSteps.map((_,i)=>`<span style="width:${i===onboardStep?24:8}px;height:8px;border-radius:999px;background:${i===onboardStep?'var(--orange)':'var(--line)'}"></span>`).join('')}</div>
+  `;
+}
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function openBranchSwitcher(){ openOnboard(); onboardStep=1; renderOnboard(); }
+
+// Data
+const demoMenu=[
+  {id:1, category:'Momos', name:'Chicken Momos (8 pcs)', desc:'Juicy chicken mince, hand-folded', price:199, variant:'Full • 8 pcs', dietary:'Non-veg', addons:'Extra chutney +₹20', cost:68, img:'https://images.unsplash.com/photo-1534422298391-e4f640380802?w=200&h=200&fit=crop', branch:'CP', score:92, views:1240},
+  {id:2, category:'Momos', name:'Veg Momos (8 pcs)', desc:'Mixed veg, soft wrapper', price:149, variant:'Full', dietary:'Veg', addons:'Mayo dip +₹20', cost:42, img:'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=200&h=200&fit=crop', branch:'CP', score:88, views:980},
+  {id:3, category:'Momos', name:'Paneer Momos', desc:'Cottage cheese, spiced', price:179, variant:'Full', dietary:'Veg', addons:'-', cost:58, img:'https://images.unsplash.com/photo-1534422298391-e4f640380802?w=200&h=200&fit=crop', branch:'GK', score:81, views:760},
+  {id:4, category:'Pizza', name:'Margherita', desc:'Classic cheese & basil', price:249, variant:'7 inch', dietary:'Veg', addons:'Extra cheese +₹40', cost:78, img:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&h=200&fit=crop', branch:'CP', score:76, views:890},
+  {id:5, category:'Pizza', name:'Truffle Mushroom Pizza', desc:'Wild mushrooms, truffle oil', price:399, variant:'10 inch', dietary:'Veg', addons:'-', cost:112, img:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop', branch:'CP', score:94, views:640},
+  {id:6, category:'Pizza', name:'Pepperoni Feast', desc:'Pepperoni, mozzarella', price:449, variant:'10 inch', dietary:'Non-veg', addons:'Extra pepperoni +₹60', cost:138, img:'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=200&h=200&fit=crop', branch:'CyberHub', score:89, views:720},
+  {id:7, category:'Fries & Sides', name:'Peri-Peri Fries', desc:'Crinkle fries, peri peri dust', price:129, variant:'Regular', dietary:'Veg', addons:'Cheese dip +₹30', cost:32, img:'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=200&h=200&fit=crop', branch:'CP', score:86, views:1100},
+  {id:8, category:'Fries & Sides', name:'Cheesy Fries', desc:'Fries loaded with cheese', price:159, variant:'Large', dietary:'Veg', addons:'-', cost:48, img:'https://images.unsplash.com/photo-1630384060421-c342f6a7d8b9?w=200&h=200&fit=crop', branch:'GK', score:74, views:540},
+  {id:9, category:'Burgers', name:'Chicken Burger', desc:'Crispy chicken, slaw', price:199, variant:'Single', dietary:'Non-veg', addons:'Extra patty +₹80', cost:72, img:'https://images.unsplash.com/photo-1568909344668-6f14a07b56a0?w=200&h=200&fit=crop', branch:'CP', score:83, views:860},
+  {id:10, category:'Burgers', name:'Veggie Supreme', desc:'Veg patty, lettuce', price:149, variant:'Single', dietary:'Veg', addons:'Cheese +₹20', cost:46, img:'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=200&h=200&fit=crop', branch:'CP', score:68, views:420},
+  {id:11, category:'Beverages', name:'Cold Coffee', desc:'Creamy, iced', price:119, variant:'300ml', dietary:'Veg', addons:'Extra shot +₹30', cost:28, img:'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=200&h=200&fit=crop', branch:'CP', score:79, views:610},
+  {id:12, category:'Beverages', name:'Masala Chai', desc:'Kadak chai', price:49, variant:'150ml', dietary:'Veg', addons:'-', cost:12, img:'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=200&h=200&fit=crop', branch:'CP', score:71, views:380},
+  {id:13, category:'Momos', name:'Kurkure Momos', desc:'Fried crunchy momos', price:189, variant:'Full', dietary:'Veg', addons:'Dip +₹20', cost:62, img:'https://images.unsplash.com/photo-1534422298391-e4f640380802?w=200&h=200&fit=crop', branch:'CP', score:77, views:590},
+  {id:14, category:'Pizza', name:'Paneer Tikka Pizza', desc:'Tikka paneer, onions', price:349, variant:'10 inch', dietary:'Veg', addons:'Extra paneer +₹50', cost:98, img:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&h=200&fit=crop', branch:'GK', score:82, views:670},
+];
+let menuData=[...demoMenu];
+let advisorData=[
+  {id:1, type:'combo', title:'Launch Momo + Fries combo at ₹229', reason:'42% co-occurrence: Chicken Momos + Peri-Peri Fries (127 → 89 orders, 30d). AOV down 8% — combo recovers margin.', metric:'Co-purchase 0.42 • AOV ₹539 → ₹498', impact:'+6–9% AOV • ~₹9,200/week EST.', confidence:86, status:'pending', img:'https://images.unsplash.com/photo-1534422298391-e4f640380802?w=200&h=200&fit=crop'},
+  {id:2, type:'pricing', title:'Test +₹40 on Truffle Mushroom Pizza', reason:'4.7★, 38% reorder, low price elasticity in “Premium Veg Pizza” cluster.', metric:'Price ₹399 → ₹439 • Food cost ₹112 • Margin 72% → 74%', impact:'+₹6,800/mo EST. without volume loss', confidence:78, status:'pending'},
+  {id:3, type:'menu', title:'Rewrite 4 descriptions for SEO', reason:'Items with short descriptions have 22% fewer views on Swiggy/Zomato.', metric:'Views: Veggie Supreme 420 vs avg 780', impact:'+12–18% discoverability EST.', confidence:71, status:'pending'},
+  {id:4, type:'review', title:'Respond to 3 “late delivery” reviews', reason:'Spike 3 in 24h vs 0.4/day baseline. Sentiment -0.62 for delivery.', metric:'Delivery rating 3.9 → 4.1 if resolved', impact:'Prevents -5% repeat risk', confidence:82, status:'pending'},
+  {id:5, type:'retention', title:'Win-back dormant: 482 customers', reason:'Not ordered in 30+ days • Last AOV ₹612 (> avg). High win-back propensity.', metric:'Dormant 482 • Churn risk 18% of base', impact:'8–12% reactivation at ₹200 off EST.', confidence:69, status:'pending'},
+];
+
+function initApp(){
+  renderMenu();
+  renderAdvisor();
+  renderGrowth();
+  renderCharts();
+  renderRecentScans();
+  renderCRM();
+  renderReviews();
+}
+
+function switchView(view){
+  document.querySelectorAll('[id^="view-"]').forEach(el=>el.style.display='none');
+  const target=document.getElementById('view-'+view);
+  if(target) target.style.display='block';
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active', el.dataset.view===view));
+  document.querySelectorAll('.mob-item').forEach(el=>el.classList.toggle('active', el.dataset.mob===view));
+  document.getElementById('sidebar').classList.remove('open');
+  window.scrollTo({top:0, behavior:'smooth'});
+  if(view==='dashboard') setTimeout(renderCharts,80);
+  if(view==='intelligence') setTimeout(renderCharts,80);
+  if(view==='analytics') setTimeout(renderCharts,80);
+}
+
+// Charts with canvas
+function drawSpark(id, data, color){
+  const c=document.getElementById(id);
+  if(!c) return;
+  const dpr=window.devicePixelRatio||1;
+  const rect=c.getBoundingClientRect();
+  c.width=rect.width*dpr; c.height=rect.height*dpr;
+  const ctx=c.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const w=rect.width, h=rect.height;
+  ctx.clearRect(0,0,w,h);
+  const max=Math.max(...data), min=Math.min(...data);
+  const pad=4;
+  ctx.beginPath();
+  ctx.strokeStyle=color; ctx.lineWidth=2; ctx.lineJoin='round'; ctx.lineCap='round';
+  data.forEach((v,i)=>{
+    const x=(i/(data.length-1))*w;
+    const y=h - pad - ((v-min)/(max-min||1))*(h-pad*2);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  // fill
+  ctx.lineTo(w, h); ctx.lineTo(0,h); ctx.closePath();
+  ctx.fillStyle=color+'18';
+  ctx.fill();
+}
+function drawLineChart(id){
+  const c=document.getElementById(id);
+  if(!c) return;
+  const dpr=window.devicePixelRatio||1;
+  const rect=c.getBoundingClientRect();
+  c.width=rect.width*dpr; c.height=rect.height*dpr;
+  const ctx=c.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const w=rect.width, h=rect.height;
+  ctx.clearRect(0,0,w,h);
+  const labels=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const rev=[22, 26, 24, 28, 30, 31, 26];
+  const ord=[38,44,42,50,56,62,50];
+  const max=32;
+  // grid
+  ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--line');
+  ctx.lineWidth=1;
+  for(let i=0;i<4;i++){ const y=20 + i*((h-40)/3); ctx.beginPath(); ctx.moveTo(36,y); ctx.lineTo(w-10,y); ctx.stroke(); }
+  // rev line
+  function plot(data,color,fill){
+    ctx.beginPath(); ctx.strokeStyle=color; ctx.lineWidth=2.5; ctx.lineJoin='round';
+    data.forEach((v,i)=>{
+      const x=36 + (i/(data.length-1))*(w-46);
+      const y=h-20 - (v/max)*(h-40);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    if(fill){
+      ctx.lineTo(36 + w-46, h-20); ctx.lineTo(36, h-20); ctx.closePath(); ctx.fillStyle=fill; ctx.fill();
+    }
+    // dots
+    data.forEach((v,i)=>{
+      const x=36 + (i/(data.length-1))*(w-46);
+      const y=h-20 - (v/max)*(h-40);
+      ctx.beginPath(); ctx.fillStyle=color; ctx.arc(x,y,3.5,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,y,1.6,0,Math.PI*2); ctx.fill();
+    });
+  }
+  plot(rev, '#FF4D00', 'rgba(255,77,0,0.08)');
+  plot(ord.map(o=>o/2), '#2563EB', 'rgba(37,99,235,0.06)');
+  // labels
+  ctx.fillStyle=getComputedStyle(document.body).color.includes('15,17,21')? '#6B7280':'#9CA3AF';
+  ctx.font='11px Inter'; ctx.textAlign='center';
+  labels.forEach((l,i)=>{ const x=36 + (i/(labels.length-1))*(w-46); ctx.fillText(l,x,h-4); });
+  // legend
+  ctx.textAlign='left'; ctx.font='11px Inter';
+  ctx.fillStyle='#FF4D00'; ctx.fillRect(36,8,10,10); ctx.fillStyle='#6B7280'; ctx.fillText('Revenue (₹k)',50,16);
+  ctx.fillStyle='#2563EB'; ctx.fillRect(130,8,10,10); ctx.fillStyle='#6B7280'; ctx.fillText('Orders (/2)',144,16);
+}
+function renderCharts(){
+  drawSpark('sparkRevenue',[18,19,22,20,24,26,28], '#059669');
+  drawSpark('sparkOrders',[30,32,31,34,36,38,34], '#2563EB');
+  drawSpark('sparkAov',[560,555,545,540,538,535,539], '#D97706');
+  drawLineChart('revChart');
+  drawLineChart('anaChart');
+  // simple bar for cat
+  const cc=document.getElementById('catChart');
+  if(cc){
+    const dpr=window.devicePixelRatio||1; const rect=cc.getBoundingClientRect(); cc.width=rect.width*dpr; cc.height=rect.height*dpr;
+    const ctx=cc.getContext('2d'); ctx.scale(dpr,dpr); const w=rect.width, h=rect.height; ctx.clearRect(0,0,w,h);
+    const cats=[['Momos',4],['Pizza',4],['Fries',2],['Burgers',2],['Beverages',2]];
+    const max=4; const barW=(w-40)/cats.length - 12;
+    cats.forEach(([name,val],i)=>{
+      const x=20 + i*((w-20)/cats.length); const bh=(val/max)*(h-40); const y=h-20-bh;
+      ctx.fillStyle=i===0?'#FF4D00':i===1?'#7C3AED':i===2?'#059669':i===3?'#D97706':'#2563EB';
+      ctx.beginPath(); ctx.roundRect(x,y,barW,bh,8); ctx.fill();
+      ctx.fillStyle='#6B7280'; ctx.font='11px Inter'; ctx.textAlign='center'; ctx.fillText(name, x+barW/2, h-6); ctx.fillStyle='#0F1115'; ctx.font='700 12px Inter'; ctx.fillText(val, x+barW/2, y-6);
+    });
+  }
+  // retention etc
+  [['retChart', [34,34,33,34,34]],['campChart',[12,14,18,18]],['sentChart',[62,24,14]]].forEach(([id,data])=>{
+    const c=document.getElementById(id); if(!c) return;
+    const rect=c.getBoundingClientRect(); const dpr=window.devicePixelRatio||1; c.width=rect.width*dpr; c.height=rect.height*dpr;
+    const ctx=c.getContext('2d'); ctx.scale(dpr,dpr); const w=rect.width, h=rect.height; ctx.clearRect(0,0,w,h);
+    const max=Math.max(...data);
+    data.forEach((v,i)=>{
+      const x=10 + i*( (w-20)/data.length ); const bw=(w-20)/data.length - 10; const bh=(v/max)*(h-30); const y=h-18-bh;
+      ctx.fillStyle=['#059669','#2563EB','#D97706','#7C3AED'][i%4]; ctx.beginPath(); ctx.roundRect(x,y,bw,bh,6); ctx.fill();
+    });
+  });
+}
+window.addEventListener('resize', renderCharts);
+
+// Menu editor
+function renderMenu(){
+  const q=(document.getElementById('menuSearch')?.value||'').toLowerCase();
+  const catF=document.getElementById('catFilter')?.value||'all';
+  const branchF=document.getElementById('branchFilter')?.value||'all';
+  const cats=[...new Set(menuData.map(m=>m.category))];
+  // cat filter options
+  const sel=document.getElementById('catFilter');
+  if(sel && sel.options.length!==cats.length+1){
+    sel.innerHTML='<option value="all">All categories</option>'+cats.map(c=>`<option>${c}</option>`).join('');
+  }
+  // cat list
+  document.getElementById('catCount').textContent=cats.length;
+  document.getElementById('catList').innerHTML=cats.map(c=>{
+    const count=menuData.filter(m=>m.category===c).length;
+    const active=catF===c;
+    return `<button onclick="document.getElementById('catFilter').value='${c}';renderMenu()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;border:1px solid ${active?'var(--orange)':'var(--line)'};background:${active?'var(--orangeSoft)':'var(--card)'};cursor:pointer;text-align:left"><span style="font-weight:700;font-size:13px">${c}</span><span class="badge" style="background:var(--bg);border:1px solid var(--line)">${count}</span></button>`
+  }).join('') + `<button onclick="document.getElementById('catFilter').value='all';renderMenu()" style="width:100%;padding:8px;border-radius:10px;border:1px dashed var(--line);background:transparent;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer">Clear filter</button>`;
+
+  // menu list
+  let filtered=menuData.filter(m=>{
+    if(catF!=='all' && m.category!==catF) return false;
+    if(branchF!=='all' && m.branch!==branchF) return false;
+    if(q && !(m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  document.getElementById('menuCountBadge').textContent=filtered.length+' items';
+  document.getElementById('menuList').innerHTML=filtered.map(m=>{
+    const margin=m.cost? Math.round((m.price-m.cost)/m.price*100):'-';
+    const contrib=m.cost? `₹${m.price-m.cost}`:'-';
+    return `<div class="item-row">
+      <img class="thumb" src="${m.img}" alt="">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><strong style="font-size:13.5px">${m.name}</strong><span class="badge" style="background:var(--bg);border:1px solid var(--line)">${m.category}</span><span class="badge ${m.dietary==='Veg'?'badge-green':m.dietary==='Non-veg'?'badge-amber':'badge-blue'}" style="font-size:10px">${m.dietary}</span><span style="font-size:11px;color:var(--muted2)">• ${m.branch}</span></div>
+        <div style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.desc} • ${m.variant} • ${m.addons}</div>
+        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;font-size:11px"><span style="padding:3px 7px;border-radius:999px;background:var(--bg);border:1px solid var(--line)"><strong>₹${m.price}</strong> • cost ${m.cost? '₹'+m.cost:'—'} • margin ${margin}% • contrib ${contrib}</span><span style="padding:3px 7px;border-radius:999px;background:${m.score>=85?'var(--greenSoft)':m.score>=70?'var(--amberSoft)':'#FEF2F2'};color:${m.score>=85?'var(--green)':m.score>=70?'var(--amber)':'#DC2626'};font-weight:700">Score ${m.score} • Views ${m.views}</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+        <button class="btn btn-dark btn-xs" onclick="editItem(${m.id})">Edit</button>
+        <button class="btn btn-ghost btn-xs" onclick="duplicateItem(${m.id})">Duplicate</button>
+      </div>
+    </div>`
+  }).join('') || `<div style="padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px">No items match filters</div>`;
+
+  // also update extract preview
+  if(document.getElementById('extractList')) renderExtractPreview(filtered.slice(0,6));
+}
+function renderExtractPreview(items){
+  const el=document.getElementById('extractList');
+  if(!el || !items) return;
+  el.innerHTML=items.map(m=>`<div style="display:flex;gap:10px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)"><img src="${m.img}" style="width:44px;height:44px;border-radius:8px;object-fit:cover"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px">${m.name} <span style="color:var(--muted);font-weight:500">— ${m.category}</span></div><div style="font-size:11px;color:var(--muted)">${m.desc} • ${m.variant} • ${m.dietary} • Add-ons: ${m.addons}</div></div><div style="text-align:right"><div style="font-weight:800">₹${m.price}</div><div style="font-size:11px;color:var(--muted2)">portion: ${m.variant}</div></div></div>`).join('');
+}
+function addCategory(){
+  const name=prompt('Category name (e.g., Desserts)');
+  if(!name) return;
+  menuData.push({id:Date.now(), category:name, name:'New Item', desc:'Add description — no invented ingredients', price:199, variant:'Regular', dietary:'Veg', addons:'-', cost:60, img:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&h=200&fit=crop', branch:'CP', score:70, views:0});
+  renderMenu();
+}
+function addItem(){
+  const cat=prompt('Category for new item', 'Momos')||'Momos';
+  menuData.unshift({id:Date.now(), category:cat, name:'New Item — edit me', desc:'Short SEO description — edit before publishing', price:199, variant:'Regular', dietary:'Veg', addons:'Extra dip +₹20', cost:55, img:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop', branch:'CP', score:72, views:0});
+  renderMenu();
+  toast('Item added — edit details');
+}
+function duplicateItem(id){
+  const m=menuData.find(x=>x.id===id);
+  if(!m) return;
+  menuData.splice(menuData.indexOf(m)+1,0,{...m, id:Date.now(), name:m.name+' (Copy)'});
+  renderMenu();
+}
+function editItem(id){
+  const m=menuData.find(x=>x.id===id);
+  if(!m) return;
+  document.getElementById('editTitle').textContent='Edit: '+m.name;
+  document.getElementById('editBody').innerHTML=`
+    <div style="display:grid;gap:12px">
+      <div style="display:grid;grid-template-columns:1fr 140px;gap:10px">
+        <div><label class="label">Item name</label><input id="eName" class="input" value="${m.name}"></div>
+        <div><label class="label">Category</label><input id="eCat" class="input" value="${m.category}"></div>
+      </div>
+      <div><label class="label">Description (SEO-friendly, no invented ingredients)</label><textarea id="eDesc" class="input" style="height:72px;padding:10px;resize:vertical">${m.desc}</textarea><div style="font-size:11px;color:var(--muted2);margin-top:4px">Long: for website • Short: for Swiggy/Zomato • Delivery: compact</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div><label class="label">Price (₹)</label><input id="ePrice" type="number" class="input" value="${m.price}"></div>
+        <div><label class="label">Food cost (₹)</label><input id="eCost" type="number" class="input" value="${m.cost}"></div>
+        <div><label class="label">Variant / Portion</label><input id="eVar" class="input" value="${m.variant}"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="label">Dietary</label><select id="eDiet" class="input"><option ${m.dietary==='Veg'?'selected':''}>Veg</option><option ${m.dietary==='Non-veg'?'selected':''}>Non-veg</option><option>Egg</option><option>Jain</option></select></div>
+        <div><label class="label">Add-ons</label><input id="eAdd" class="input" value="${m.addons}"></div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:space-between;align-items:center">
+        <button class="btn btn-ghost btn-sm" style="color:#DC2626;border-color:#FECACA" onclick="deleteItem(${m.id})">Delete item</button>
+        <div style="display:flex;gap:8px"><button class="btn btn-ghost" onclick="closeModal('editModal')">Cancel</button><button class="btn btn-primary" onclick="saveItem(${m.id})">Save changes</button></div>
+      </div>
+      <div style="padding:10px 12px;border-radius:12px;background:var(--blueSoft);border:1px solid #BFDBFE;font-size:12px">AI will generate <strong>tags, cross-sell & combos</strong> after save. Margin auto-calculates: <span id="liveMargin" style="font-weight:800">${m.cost? Math.round((m.price-m.cost)/m.price*100):'-'}%</span></div>
+    </div>`;
+  document.getElementById('editModal').classList.add('open');
+  ['ePrice','eCost'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('input',()=>{
+      const p=parseFloat(document.getElementById('ePrice').value)||0;
+      const c=parseFloat(document.getElementById('eCost').value)||0;
+      document.getElementById('liveMargin').textContent=c? Math.round((p-c)/p*100)+'%':'-';
+    });
+  });
+}
+function saveItem(id){
+  const m=menuData.find(x=>x.id===id);
+  m.name=document.getElementById('eName').value;
+  m.category=document.getElementById('eCat').value;
+  m.desc=document.getElementById('eDesc').value;
+  m.price=parseFloat(document.getElementById('ePrice').value)||m.price;
+  m.cost=parseFloat(document.getElementById('eCost').value)||m.cost;
+  m.variant=document.getElementById('eVar').value;
+  m.dietary=document.getElementById('eDiet').value;
+  m.addons=document.getElementById('eAdd').value;
+  closeModal('editModal');
+  renderMenu();
+  toast('Saved — audit logged');
+}
+function deleteItem(id){
+  if(!confirm('Delete this item?')) return;
+  menuData=menuData.filter(x=>x.id!==id);
+  closeModal('editModal');
+  renderMenu();
+  toast('Item deleted');
+}
+function exportCSV(){
+  const rows=[['category','item_name','description','price','variant','dietary','addons','food_cost','branch']].concat(menuData.map(m=>[m.category,m.name,m.desc,m.price,m.variant,m.dietary,m.addons,m.cost,m.branch]));
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='menu-export.csv'; a.click();
+}
+
+// Scanner
+function dragEnter(e){ e.preventDefault(); document.getElementById('dropZone').classList.add('drag'); }
+function dragOver(e){ e.preventDefault(); }
+function dragLeave(e){ document.getElementById('dropZone').classList.remove('drag'); }
+function handleDrop(e){
+  e.preventDefault(); document.getElementById('dropZone').classList.remove('drag');
+  handleFile(e.dataTransfer.files);
+}
+function handleFile(files){
+  if(!files || !files[0]) return;
+  const f=files[0];
+  startScan(f.name, f.type.includes('pdf')?'PDF':f.type.includes('sheet')||f.name.endsWith('xlsx')?'Excel':f.name.endsWith('csv')?'CSV':'Image');
+}
+function pasteText(){
+  const t=prompt('Paste menu text (we’ll parse it with AI extraction)');
+  if(t) startScan('Pasted text','Text');
+}
+function loadDemoMenu(){ startScan('spice-route-menu.pdf','PDF'); }
+function startScan(filename, kind){
+  document.getElementById('scanProgress').style.display='block';
+  document.getElementById('extractedPreview').style.display='none';
+  document.getElementById('scanTitle').textContent=`Scanning ${filename} — ${kind} • Secure upload`;
+  let pct=0;
+  const bar=document.getElementById('scanBar');
+  const pctEl=document.getElementById('scanPct');
+  const log=document.getElementById('scanLog');
+  const steps=[
+    {p:22, ocr:'● OCR — extracting', ai:'◷ AI extract', val:'◷ Validate', log:'OCR: detected 24 items, 5 categories…'},
+    {p:58, ocr:'✓ OCR done', ai:'● AI — structuring', val:'◷ Validate', log:'AI: parsing category, name, description, price, variant, dietary, add-ons…'},
+    {p:86, ocr:'✓ OCR done', ai:'✓ AI done', val:'● Validating', log:'Validating prices, flagging missing costs, no invented ingredients…'},
+    {p:100, ocr:'✓ OCR done', ai:'✓ AI done', val:'✓ Valid', log:'Done — ready for human review. 24 items extracted.'},
+  ];
+  let idx=0;
+  const int=setInterval(()=>{
+    pct=Math.min(100, pct+ Math.random()*14+6);
+    if(idx<steps.length && pct>=steps[idx].p){
+      document.getElementById('stepOCR').textContent=steps[idx].ocr;
+      document.getElementById('stepAI').textContent=steps[idx].ai;
+      document.getElementById('stepVal').textContent=steps[idx].val;
+      log.textContent=steps[idx].log;
+      idx++;
+    }
+    bar.style.width=pct+'%';
+    pctEl.textContent=Math.round(pct)+'%';
+    if(pct>=100){
+      clearInterval(int);
+      setTimeout(()=>{
+        document.getElementById('extractedPreview').style.display='block';
+        document.getElementById('extractStats').textContent=`(${menuData.length} items • ${[...new Set(menuData.map(m=>m.category))].length} categories • ${kind})`;
+        renderExtractPreview(menuData.slice(0,6));
+        addRecentScan(filename, kind);
+        toast('Extraction complete — review in editor before publishing');
+      },300);
+    }
+  },220);
+}
+function renderRecentScans(){
+  const el=document.getElementById('recentScans');
+  if(!el) return;
+  const scans=[
+    {name:'spice-route-menu.pdf', kind:'PDF', time:'2 min ago', items:24},
+    {name:'momos-pricelist.xlsx', kind:'Excel', time:'Yesterday', items:18},
+    {name:'cafe-menu.jpg', kind:'Image', time:'3 days ago', items:12},
+  ];
+  el.innerHTML=scans.map(s=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--bg)"><span style="width:36px;height:36px;border-radius:10px;background:var(--violetSoft);color:var(--violet);display:grid;place-items:center;font-size:14px">📄</span><div style="flex:1"><div style="font-weight:700;font-size:13px">${s.name}</div><div style="font-size:11px;color:var(--muted)">${s.kind} • ${s.items} items • ${s.time}</div></div><button class="btn btn-ghost btn-xs" onclick="loadDemoMenu()">Re-run</button></div>`).join('');
+}
+function addRecentScan(name,kind){
+  const el=document.getElementById('recentScans');
+  const div=document.createElement('div');
+  div.innerHTML=`<div style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--bg)"><span style="width:36px;height:36px;border-radius:10px;background:var(--greenSoft);color:var(--green);display:grid;place-items:center">✓</span><div style="flex:1"><div style="font-weight:700;font-size:13px">${name}</div><div style="font-size:11px;color:var(--muted)">${kind} • 24 items • just now</div></div><span class="badge badge-green">New</span></div>`;
+  el.prepend(div.firstElementChild);
+}
+
+// Intelligence
+function renderGrowth(){
+  document.getElementById('healthFactors').innerHTML=[
+    {label:'Menu Health', val:84, color:'var(--green)'},
+    {label:'Pricing', val:62, color:'var(--amber)'},
+    {label:'Retention', val:71, color:'var(--blue)'},
+    {label:'Reviews', val:68, color:'var(--amber)'},
+    {label:'Marketing', val:54, color:'#DC2626'},
+    {label:'Upselling', val:79, color:'var(--violet)'},
+  ].map(f=>`<div><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700"><span>${f.label}</span><span>${f.val}/100</span></div><div class="progress" style="margin-top:6px"><div style="width:${f.val}%;background:${f.color}"></div></div></div>`).join('');
+
+  document.getElementById('growthBreakdown').innerHTML=[
+    {k:'Menu Health', v:84, c:'var(--green)', d:'Excellent balance & descriptions'},
+    {k:'Pricing', v:62, c:'var(--amber)', d:'Add food-cost for 38% items'},
+    {k:'Retention', v:71, c:'var(--blue)', d:'34% repeat, dormants rising'},
+    {k:'Reviews', v:68, c:'var(--amber)', d:'Delivery complaints spike'},
+    {k:'Digital Growth', v:61, c:'var(--amber)', d:'Instagram posts 2/week'},
+  ].map(r=>`<div style="display:flex;gap:10px;align-items:center"><div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700"><span>${r.k}</span><span>${r.v}</span></div><div style="font-size:11px;color:var(--muted)">${r.d}</div><div class="progress" style="margin-top:6px"><div style="width:${r.v}%;background:${r.c}"></div></div></div><button class="btn btn-ghost btn-xs" onclick="toast('Fix: ${r.k} → details')">Fix →</button></div>`).join('');
+
+  document.getElementById('miniActions').innerHTML=advisorData.slice(0,3).map(a=>`<div style="display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--bg)"><span style="width:8px;height:8px;border-radius:999px;background:${a.confidence>80?'var(--green)':a.confidence>70?'var(--amber)':'#DC2626'};flex-shrink:0"></span><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.title}</div><div style="font-size:11px;color:var(--muted)">${a.confidence}% confidence • ${a.impact.split('•')[0]}</div></div><button class="btn btn-dark btn-xs" onclick="switchView('advisor')">Act</button></div>`).join('');
+
+  // top products
+  const top=[...menuData].sort((a,b)=>b.views-a.views).slice(0,4);
+  document.getElementById('topProducts').innerHTML=top.map(m=>`<div style="display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px"><img src="${m.img}" style="width:44px;height:44px;border-radius:10px;object-fit:cover"><div style="flex:1"><div style="font-weight:700;font-size:13px">${m.name}</div><div style="font-size:11px;color:var(--muted)">${m.category} • ${m.views} views • ₹${m.price}</div></div><span class="badge badge-green">Top</span></div>`).join('');
+  const low=[...menuData].sort((a,b)=>a.views-b.views).slice(0,3);
+  document.getElementById('lowProducts').innerHTML=low.map(m=>`<div style="display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px"><img src="${m.img}" style="width:44px;height:44px;border-radius:10px;object-fit:cover"><div style="flex:1"><div style="font-weight:700;font-size:13px">${m.name}</div><div style="font-size:11px;color:var(--muted)">Low views • Score ${m.score} • Consider description refresh or combo</div></div><button class="btn btn-ghost btn-xs" onclick="switchView('intelligence')">Fix</button></div>`).join('');
+
+  // pricing rows
+  document.getElementById('pricingRows').innerHTML=menuData.slice(0,5).map(m=>{
+    const margin=m.cost? Math.round((m.price-m.cost)/m.price*100):'-';
+    const sug=m.name.includes('Truffle')? '+₹40 test (₹439)': m.name.includes('Cheesy')? '+₹20 test':'Keep — optimal';
+    const est=m.name.includes('Truffle')? '+₹6.8k/mo EST.': m.name.includes('Cheesy')? '+₹2.1k/mo EST.':'—';
+    return `<tr><td style="padding:10px;border-bottom:1px solid var(--line)"><div style="display:flex;gap:8px;align-items:center"><img src="${m.img}" style="width:28px;height:28px;border-radius:6px;object-fit:cover"><strong>${m.name}</strong></div></td><td style="padding:10px;border-bottom:1px solid var(--line);text-align:right">₹${m.price}</td><td style="padding:10px;border-bottom:1px solid var(--line);text-align:right">${m.cost?'₹'+m.cost:'—'}</td><td style="padding:10px;border-bottom:1px solid var(--line);text-align:right"><span style="font-weight:700">${margin}%</span> <span style="font-size:11px;color:var(--muted)">• ₹${m.cost?m.price-m.cost:'-'}</span></td><td style="padding:10px;border-bottom:1px solid var(--line);text-align:right"><span class="badge ${sug.includes('Keep')?'badge-green':'badge-amber'}">${sug}</span><div style="font-size:11px;color:var(--muted)">${est}</div></td></tr>`
+  }).join('');
+
+  document.getElementById('descList').innerHTML=[
+    {name:'Veggie Supreme', short:'Crispy veg patty, fresh lettuce & mayo in a soft bun', long:'A hearty vegetarian delight — golden-fried veg patty layered with crisp lettuce, tangy mayo and soft sesame bun. Perfect for quick lunch.'},
+    {name:'Chicken Momos (8 pcs)', short:'Hand-folded momos stuffed with juicy spiced chicken', long:'Delhi’s favourite — 8 hand-folded momos packed with juicy spiced chicken mince, steamed to perfection. Served with fiery chutney.'},
+  ].map(d=>`<div style="padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line)"><div style="display:flex;align-items:center;gap:8px"><strong style="font-size:13px">${d.name}</strong><span class="badge badge-blue">SEO</span><span style="margin-left:auto;display:flex;gap:6px"><button class="btn btn-ghost btn-xs" onclick="toast('Copied short description')">Copy short</button><button class="btn btn-dark btn-xs" onclick="toast('Applied to menu')">Apply</button></span></div><div style="font-size:12px;color:var(--muted);margin-top:6px"><strong>Short (delivery):</strong> ${d.short}</div><div style="font-size:12px;color:var(--muted)"><strong>Long (website):</strong> ${d.long}</div><div style="font-size:11px;color:var(--muted2);margin-top:4px">Tags: #veg #burger #crispy • No invented nutrition claims</div></div>`).join('');
+
+  document.getElementById('catBalance').innerHTML=[
+    ['Momos','29% • 4 items','var(--orange)'],
+    ['Pizza','29% • 4','var(--violet)'],
+    ['Fries','14% • 2','var(--green)'],
+    ['Burgers','14% • 2','var(--amber)'],
+  ].map(([k,v,c])=>`<div style="padding:8px;border-radius:10px;background:var(--bg);border:1px solid var(--line);display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:999px;background:${c}"></span><span style="font-weight:700;font-size:12px">${k}</span><span style="margin-left:auto;font-size:11px;color:var(--muted)">${v}</span></div>`).join('');
+}
+function reanalyze(){ toast('Re-analyzing — AI queue started (Redis)'); setTimeout(()=>{ toast('Health score updated: 84 → 85'); document.querySelector('[style*="--score:84"]').style.setProperty('--score','85'); },1200); }
+function openPricing(){ switchView('intelligence'); setTimeout(()=>document.getElementById('pricingRows')?.scrollIntoView({behavior:'smooth', block:'center'}),200); }
+
+// Advisor
+function renderAdvisor(){
+  document.getElementById('pendingCount').textContent=advisorData.filter(a=>a.status==='pending').length;
+  document.getElementById('advisorList').innerHTML=advisorData.map(a=>`
+    <div class="card" style="overflow:hidden;${a.status!=='pending'?'opacity:0.6':''}">
+      <div style="padding:14px 16px;display:flex;gap:12px;align-items:flex-start">
+        <div style="width:44px;height:44px;border-radius:12px;background:${a.type==='combo'?'var(--orangeSoft)':a.type==='pricing'?'var(--amberSoft)':a.type==='review'?'#FEF2F2':'var(--blueSoft)'};color:${a.type==='combo'?'var(--orange)':a.type==='pricing'?'var(--amber)':a.type==='review'?'#DC2626':'var(--blue)'};display:grid;place-items:center;font-size:18px;flex-shrink:0">${a.type==='combo'?'◈':a.type==='pricing'?'₹':a.type==='review'?'★':'◐'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="badge ${a.type==='combo'?'badge-green':a.type==='pricing'?'badge-amber':a.type==='review'?'badge-blue':'badge-violet'}">${a.type}</span><span class="badge" style="background:var(--bg);border:1px solid var(--line)">${a.confidence}% confidence</span><span style="margin-left:auto;font-size:11px;color:var(--muted2)">Source: ${a.metric.split('•')[0].trim()}</span></div>
+          <div style="font-weight:800;margin-top:6px;font-size:15px">${a.title}</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:4px"><strong style="color:var(--ink)">Reason:</strong> ${a.reason}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px">
+            <div style="padding:8px;border-radius:10px;background:var(--bg);border:1px solid var(--line)"><div style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted)">Supporting metric</div><div style="font-size:12px;font-weight:600;margin-top:2px">${a.metric}</div></div>
+            <div style="padding:8px;border-radius:10px;background:var(--bg);border:1px solid var(--line)"><div style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted)">Expected impact</div><div style="font-size:12px;font-weight:700;color:var(--green)">EST. ${a.impact}</div></div>
+            <div style="padding:8px;border-radius:10px;background:var(--bg);border:1px solid var(--line)"><div style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted)">Confidence</div><div style="font-size:12px;font-weight:800;color:${a.confidence>80?'var(--green)':a.confidence>70?'var(--amber)':'#DC2626'}">${a.confidence}% • ${a.confidence>80?'High':a.confidence>70?'Medium':'Low'}</div></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <button class="btn btn-primary btn-xs" onclick="applyAdvisor(${a.id})">Apply</button>
+            <button class="btn btn-ghost btn-xs" onclick="editAdvisor(${a.id})">Edit</button>
+            <button class="btn btn-ghost btn-xs" onclick="dismissAdvisor(${a.id})">Dismiss</button>
+            <button class="btn btn-ghost btn-xs" onclick="toast('Scheduled: Monday 11am')">Schedule</button>
+            <button class="btn btn-ghost btn-xs" onclick="toast('Details: metric source + backtest')">View Details</button>
+          </div>
+        </div>
+      </div>
+      ${a.status!=='pending'?`<div style="padding:8px 16px;background:var(--bg);border-top:1px solid var(--line);font-size:12px;font-weight:700;color:var(--muted)">Status: ${a.status}</div>`:''}
+    </div>`).join('');
+}
+function applyAdvisor(id){
+  const a=advisorData.find(x=>x.id===id); if(!a) return; a.status='applied (draft)'; renderAdvisor(); renderGrowth(); toast('Applied as draft — approve in Menu Editor');
+}
+function dismissAdvisor(id){
+  const a=advisorData.find(x=>x.id===id); a.status='dismissed'; renderAdvisor(); toast('Dismissed — audit logged');
+}
+function editAdvisor(id){ toast('Editing — opens detail drawer (approve/edit flow)'); }
+function generateAdvisor(){
+  advisorData.unshift({id:Date.now(), type:'combo', title:'Test Pizza + Coke combo at ₹499 (EST.)', reason:'Cross-sell affinity 0.38 between Pepperoni Feast and beverages in evening segment.', metric:'Pepperoni 89 orders ↔ Coke 76 • 30d', impact:'+4–7% AOV EST.', confidence:74, status:'pending'});
+  renderAdvisor(); toast('Generated 1 new recommendation');
+}
+
+// CRM
+function renderCRM(){
+  const customers=[
+    {name:'Neha Gupta', seg:'VIP', orders:18, last:'2 days ago', aov:612, fav:'Momos', avatar:32},
+    {name:'Amit Verma', seg:'Repeat', orders:7, last:'5 days ago', aov:489, fav:'Pizza', avatar:15},
+    {name:'Sneha Rao', seg:'Dormant', orders:4, last:'34 days ago', aov:540, fav:'Burgers', avatar:22},
+    {name:'Vikram Singh', seg:'New', orders:1, last:'1 day ago', aov:399, fav:'Pizza', avatar:12},
+    {name:'Pooja Mehta', seg:'Lost', orders:2, last:'62 days ago', aov:320, fav:'Beverages', avatar:26},
+  ];
+  document.getElementById('crmRows').innerHTML=customers.map(c=>`<tr><td style="padding:10px;border-bottom:1px solid var(--line)"><div style="display:flex;align-items:center;gap:10px"><img src="https://i.pravatar.cc/100?img=${c.avatar}" style="width:32px;height:32px;border-radius:999px"><div><strong>${c.name}</strong><div style="font-size:11px;color:var(--muted)">Consent: ✓ opt-in</div></div></div></td><td style="padding:10px;border-bottom:1px solid var(--line)"><span class="badge ${c.seg==='VIP'?'badge-violet':c.seg==='Dormant'?'badge-amber':c.seg==='Lost'?'badge-blue':'badge-green'}">${c.seg}</span></td><td style="padding:10px;border-bottom:1px solid var(--line);text-align:right">${c.orders}</td><td style="padding:10px;border-bottom:1px solid var(--line);text-align:right">${c.last}</td><td style="padding:10px;border-bottom:1px solid var(--line);text-align:right">₹${c.aov}</td><td style="padding:10px;border-bottom:1px solid var(--line)">${c.fav}</td><td style="padding:10px;border-bottom:1px solid var(--line);text-align:right"><button class="btn btn-ghost btn-xs" onclick="toast('Customer drawer: orders + preferences')">View</button></td></tr>`).join('');
+}
+function renderReviews(){
+  const reviews=[
+    {name:'Rahul K.', rating:2, text:'Delivery was very late, 50 mins. Food was cold.', time:'3h ago', sentiment:'Negative • Delivery', sentimentColor:'#DC2626', dish:'Chicken Momos'},
+    {name:'Ananya S.', rating:5, text:'Amazing truffle pizza! Best in CP.', time:'6h ago', sentiment:'Positive', sentimentColor:'var(--green)', dish:'Truffle Pizza'},
+    {name:'Mohit D.', rating:3, text:'Packaging could be better, curry spilled.', time:'1d ago', sentiment:'Neutral • Packaging', sentimentColor:'var(--amber)', dish:'Paneer Tikka'},
+  ];
+  document.getElementById('reviewList').innerHTML=reviews.map(r=>`<div class="card card-p"><div style="display:flex;gap:12px"><img src="https://i.pravatar.cc/100?img=${Math.floor(Math.random()*40)+10}" style="width:36px;height:36px;border-radius:999px"><div style="flex:1"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><strong>${r.name}</strong><span style="color:var(--amber)">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span><span class="badge" style="background:var(--bg);border:1px solid var(--line)">${r.dish}</span><span style="margin-left:auto;font-size:11px;color:var(--muted)">${r.time}</span></div><div style="font-size:13px;margin-top:6px">${r.text}</div><div style="margin-top:8px"><span class="badge" style="background:${r.sentimentColor==='var(--green)'?'var(--greenSoft)':r.sentimentColor==='var(--amber)'?'var(--amberSoft)':'#FEF2F2'};color:${r.sentimentColor};border:1px solid ${r.sentimentColor==='var(--green)'?'#A7F3D0':r.sentimentColor==='var(--amber)'?'#FDE68A':'#FECACA'}">${r.sentiment}</span></div><div style="margin-top:10px;padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line);font-size:12px"><strong>AI draft:</strong> Hi ${r.name.split(' ')[0]}, thanks for your feedback on ${r.dish}. We’re sorry for the experience... <span style="color:var(--muted)">(approve/edit required)</span><div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-dark btn-xs" onclick="toast('Response sent — awaiting approval')">Approve & send</button><button class="btn btn-ghost btn-xs" onclick="toast('Editing draft')">Edit</button><button class="btn btn-ghost btn-xs" onclick="toast('Rejected')">Reject</button></div></div></div></div></div>`).join('');
+}
+function openCampaignGen(){ document.getElementById('campaignModal').classList.add('open'); document.getElementById('campaignBody').innerHTML=`
+  <div style="display:grid;gap:12px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><label class="label">Objective</label><select class="input"><option>Win back dormant</option><option>Boost AOV</option><option>Launch combo</option></select></div>
+      <div><label class="label">Segment</label><select class="input"><option>Dormant (482)</option><option>VIP (312)</option><option>Repeat</option></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><label class="label">Offer</label><input class="input" value="Momo+Fries @ ₹229"></div>
+      <div><label class="label">Budget / Date</label><input class="input" value="₹5,000 • 28 Sep 11am"></div>
+    </div>
+    <button class="btn btn-primary" onclick="toast('Generated 5 copies: WhatsApp, SMS, IG, FB, GBP'); closeModal('campaignModal')" style="width:100%">✦ Generate copies</button>
+    <div style="font-size:11px;color:var(--muted2);text-align:center">Respects WhatsApp consent & template approval • All sends are tracked (delivery, click, conversion)</div>
+  </div>`; }
+
+// init if already logged
+if(localStorage.getItem('rgos-user')){
+  const u=JSON.parse(localStorage.getItem('rgos-user'));
+  document.getElementById('authEmail').value=u.email;
+  handleAuth();
+}
+function updateDateRange(v){ toast('Range: '+v); renderCharts(); }
+</script>
+</body>
+</html>
